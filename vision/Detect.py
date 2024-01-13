@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import robotpy_apriltag as apriltag
+import os
 
 def main():
     tagSize = 0.17 # Tag size for competition is ~17 cm
@@ -16,9 +17,10 @@ def main():
     # Create an AprilTag detector
     detector = apriltag.AprilTagDetector()
     detector.addFamily("tag36h11")
-    config = apriltag.AprilTagPoseEstimator.Config(tagSize, focalLengthX, focalLengthY, focalCenterX, focalCenterY)
-    estimator = apriltag.AprilTagPoseEstimator(config)
-    
+    #config = apriltag.AprilTagPoseEstimator.Config(tagSize, focalLengthX, focalLengthY, focalCenterX, focalCenterY)
+    #estimator = apriltag.AprilTagPoseEstimator(config)
+    prevId = False
+
     while True:
         # Capture a frame from the camera
         ret, frame = cap.read()
@@ -40,12 +42,18 @@ def main():
             # Extract tag data
             tag_id = tag.getId()
             tag_family = tag.getFamily()
-            pose = estimator.estimate(tag)
+            #pose = estimator.estimate(tag)
             
-            print(f"Tag ID: {tag_id}, Tag Family: {tag_family}, Tag Pose: {pose}")
+            if prevId == tag_id:
+                os.system('clear')
+
+            print(f"Tag ID: {tag_id}")
+
+            prevId = tag_id
         
         # Display the processed frame with detected tags
-        cv2.imshow('AprilTags', frame)
+        cv2.imshow('AprilTags', gray)
+
         
         # Exit when the 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
