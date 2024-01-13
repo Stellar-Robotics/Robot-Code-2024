@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import robotpy_apriltag as apriltag
 import os
+import time
 
 def main():
     tagSize = 0.17 # Tag size for competition is ~17 cm
@@ -43,16 +44,19 @@ def main():
             tag_id = tag.getId()
             tag_family = tag.getFamily()
             #pose = estimator.estimate(tag)
-            
-            if prevId == tag_id:
-                os.system('clear')
 
-            print(f"Tag ID: {tag_id}")
+            if prevId == tag_id:
+                #os.system('clear')
+                continue
+            else:
+                os.system('cls' if os.name=='nt' else 'clear') # clears the console window
+                os.system(f"notify-send \"April tag detected: ID = {tag_id}\"" if os.name!='nt' else '') # Sends unix graphical notification if possible
+                print(f"Tag ID: {tag_id}") # Displays the tag_id in the console
 
             prevId = tag_id
         
         # Display the processed frame with detected tags
-        cv2.imshow('AprilTags', gray)
+        cv2.imshow('AprilTags', frame)
 
         
         # Exit when the 'q' key is pressed
