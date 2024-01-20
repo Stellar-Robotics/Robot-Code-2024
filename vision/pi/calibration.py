@@ -9,11 +9,15 @@ objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
 # Arrays to store object points and image points from all the images.
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
-images = glob.glob('*.jpg')
+cap = cv.VideoCapture(0)
+images = []
+while images.__len__() < 5:
+    success, newImg = cap.read()
+    if success:
+        images.append(newImg)
 
-for fname in images:
+for img in images:
     print("Hello")
-    img = cv.imread(fname)
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     # Find the chess board corners
     ret, corners = cv.findChessboardCorners(gray, (7,6), None)
@@ -27,3 +31,5 @@ for fname in images:
         cv.imshow('img', img)
         cv.waitKey(500)
 cv.destroyAllWindows()
+ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+print(mtx)
