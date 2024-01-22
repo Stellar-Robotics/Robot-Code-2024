@@ -45,6 +45,8 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    
+
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
@@ -53,10 +55,13 @@ public class RobotContainer {
             () -> m_robotDrive.driveWithAbsoluteAngle(
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightY(), OIConstants.kDriveDeadband),
+                -m_driverController.getRightX(),
+                -m_driverController.getRightY(),
                 true, true),
             m_robotDrive));
+
+        
+        //(hype > OIConstants.kRotDeadband) ? (value > 0.0 ? 1*(value - deadband)/(1-deadband) : 1*(value + deadband)/(1+deadband));
 
         /* This is the old code - use it if something goes horribly wrong
         new RunCommand(

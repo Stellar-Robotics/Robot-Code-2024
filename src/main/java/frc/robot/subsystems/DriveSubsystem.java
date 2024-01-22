@@ -16,6 +16,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.OIConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -111,10 +112,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveWithAbsoluteAngle(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {
+    double hype = Math.sqrt(Math.pow(angleX, 2) + Math.pow(angleY, 2));
+        if (hype > OIConstants.kRotDeadband) {
+            targetRobotAngle = new Rotation2d(Math.atan2(angleY, -angleX)).rotateBy(Rotation2d.fromDegrees((-90)));
+        }
+    /*
     if (Math.abs(angleX) + Math.abs(angleY) > 0) {
       targetRobotAngle = new Rotation2d(Math.atan2(angleY, -angleX)).rotateBy(Rotation2d.fromDegrees((-90)));
     }
-    
+    */
     // minimum difference between current angle and target angle (allowing signed angle)
     double angleDiff = ((targetRobotAngle.getDegrees() - m_gyro.getAngle(IMUAxis.kZ) + 180) % 360) - 180;
 
