@@ -1,15 +1,16 @@
 import cv2
 import numpy as np
 import robotpy_apriltag as apriltag
+from networktables import NetworkTables
 import os
 import time
 
 def main():
     tagSize = 0.17 # Tag size for competition is ~17 cm
-    focalCenterX = 0 # Currently unknown, pixels
-    focalCenterY = 0 # Currently unknown, pixels
-    focalLengthX = 0 # Currently unknown, pixels
-    focalLengthY = 0 # Currently unknown, pixels
+    focalCenterX = 325.00253538 # Currently unknown, pixels
+    focalCenterY = 235.65891798 # Currently unknown, pixels
+    focalLengthX = 656.29804936 # Currently unknown, pixels
+    focalLengthY = 655.66760244 # Currently unknown, pixels
 
     # Initialize the camera
     cap = cv2.VideoCapture(0)  # Use the camera at index 0 (usually the built-in camera)

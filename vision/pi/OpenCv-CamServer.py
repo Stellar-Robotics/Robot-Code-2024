@@ -9,6 +9,14 @@ import time
 import robotpy_apriltag as apriltag
 
 
+
+tagSize = 0.17 # Tag size for competition is ~17 cm
+focalCenterX = 325.00253538 # Currently unknown, pixels
+focalCenterY = 235.65891798 # Currently unknown, pixels
+focalLengthX = 656.29804936 # Currently unknown, pixels
+focalLengthY = 655.66760244 # Currently unknown, pixels
+
+
 def main():
    with open('/boot/frc.json') as f:
       config = json.load(f)
@@ -19,7 +27,7 @@ def main():
 
    nt = ntcore.NetworkTableInstance.getDefault()
 
-   CameraServer.startAutomaticCapture()
+   #CameraServer.startAutomaticCapture()
 
    input_stream = CameraServer.getVideo()
    output_stream = CameraServer.putVideo('Processed', width, height)
@@ -29,8 +37,8 @@ def main():
 
    detector = apriltag.AprilTagDetector()
    detector.addFamily("tag36h11")
-    #config = apriltag.AprilTagPoseEstimator.Config(tagSize, focalLengthX, focalLengthY, focalCenterX, focalCenterY)
-    #estimator = apriltag.AprilTagPoseEstimator(config)
+   poseConfig = apriltag.AprilTagPoseEstimator.Config(tagSize, focalLengthX, focalLengthY, focalCenterX, focalCenterY)
+   estimator = apriltag.AprilTagPoseEstimator(poseConfig)
    prevId = False
 
    # Allocating new images is very expensive, always try to preallocate
@@ -63,7 +71,8 @@ def main():
             # Extract tag data
             tag_id = tag.getId()
             tag_family = tag.getFamily()
-            #pose = estimator.estimate(tag)
+            pose = estimator.estimate(tag)
+            print(pose)
 
             if prevId == tag_id:
                 os.system('clear')
