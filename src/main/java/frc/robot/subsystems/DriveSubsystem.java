@@ -130,7 +130,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     */
     // minimum difference between current angle and target angle (allowing signed angle)
-    double angleDiff = (targetRobotAngle.getDegrees() - robotAngle + 180) % 360 - 180;
+    double angleDiff = (targetRobotAngle.getDegrees() - robotAngle + 540) % 360 - 180;
 
     System.out.println("robot angle: " + robotAngle + " target angle: " + targetRobotAngle.getDegrees() + "diff: " + angleDiff);
 
