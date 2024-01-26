@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
@@ -37,7 +38,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    mechSystem.setDefaultCommand(new RunCommand(() -> mechSystem.setIntakePower(controllerMain.getLeftY()), mechSystem));
+    mechSystem.setDefaultCommand(new RunCommand(() -> mechSystem.setIntakePower(-MathUtil.applyDeadband(controllerMain.getLeftY(), 0.10)), mechSystem));
   }
 
   /**
