@@ -4,15 +4,22 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class MechanismSubsystem extends SubsystemBase {
+
+  // Define Mechanisms
+  private final Intake floorIntake = new Intake(58);
+
   /** Creates a new MechanismSubsystem. */
   public MechanismSubsystem() {}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public void setIntakePower(double xSpeed) {
+    floorIntake.setSpeed(xSpeed);
   }
 }
