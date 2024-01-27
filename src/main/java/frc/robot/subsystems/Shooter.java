@@ -16,6 +16,8 @@ public class Shooter {
 
         // Reset motor controllers to factory settings
         shooterMotorController.restoreFactoryDefaults();
+        shooterMotorController.setSmartCurrentLimit(30, 30);
+
 
         // Grab the encoders of the motors
         //intake1_encoder = intake1.getEncoder();
