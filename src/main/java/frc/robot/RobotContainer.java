@@ -58,6 +58,9 @@ public class RobotContainer {
       MathUtil.applyDeadband(-driverController.getLeftTriggerAxis() + driverController.getRightTriggerAxis(), 0.10)), 
       mechSystem));
 
+    // Control shooter using right trigger - left trigger
+    mechSystem.setDefaultCommand(new RunCommand(() -> mechSystem.setShooterPower(driverController.getAButton()? 1 : 0), mechSystem));
+
     // Configure default commands
     driveSystem.setDefaultCommand(
         // The left stick controls translation of the robot.

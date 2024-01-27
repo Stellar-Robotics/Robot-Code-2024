@@ -10,6 +10,7 @@ public class MechanismSubsystem extends SubsystemBase {
 
   // Define Mechanisms
   private final Intake floorIntake = new Intake(58);
+  private final Shooter shooter = new Shooter(54);
 
   /** Creates a new MechanismSubsystem. */
   public MechanismSubsystem() {}
@@ -21,5 +22,9 @@ public class MechanismSubsystem extends SubsystemBase {
 
   public void setIntakePower(double xSpeed) {
     floorIntake.setSpeed(xSpeed);
+  }
+
+  public void setShooterPower(double shooterSpeed) {
+    shooter.setSpeed(shooterSpeed);
   }
 }
