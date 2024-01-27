@@ -6,16 +6,16 @@ import com.revrobotics.CANSparkMax;
 
 public class Intake {
 
-    private final CANSparkMax intake1;
+    private final CANSparkMax intakeMotorController;
     //private final RelativeEncoder intake1_encoder;
 
-    public Intake(int intakeCANId1) { // Constructor Function
+    public Intake(int intakeCanId) { // Constructor Function
 
         // Define Motors
-        intake1 = new CANSparkMax(intakeCANId1, MotorType.kBrushless);
+        intakeMotorController = new CANSparkMax(intakeCanId, MotorType.kBrushless);
 
         // Reset motor controllers to factory settings
-        intake1.restoreFactoryDefaults();
+        intakeMotorController.restoreFactoryDefaults();
 
         // Grab the encoders of the motors
         //intake1_encoder = intake1.getEncoder();
@@ -24,22 +24,22 @@ public class Intake {
         //intake1_encoder.setInverted(false);
 
         // Flash motor configuration to the controllers
-        intake1.burnFlash();
+        intakeMotorController.burnFlash();
 
     }
 
     
     // Power Based Control
     public void setSpeed(double speed) {
-        intake1.set(speed);
+        intakeMotorController.set(speed);
     }
 
     public double getMotorSpeed() {
-        return intake1.get();
+        return intakeMotorController.get();
     }
 
     public void stop() {
-        intake1.set(0);
+        intakeMotorController.set(0);
     }
 
     // Encoder operations
