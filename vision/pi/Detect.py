@@ -40,7 +40,7 @@ def main():
     
 
     # Initialize the camera
-    cap = cv2.VideoCapture(1)  # Use the camera at index 0 (usually the built-in camera)
+    cap = cv2.VideoCapture(1)
 
 
     # Create an AprilTag detector
