@@ -19,6 +19,9 @@ def main():
    NetworkTables.initialize(server=ip)
    smartDashboard = NetworkTables.getTable("SmartDashboard")
 
+   # Quinn trying to figure out how networktables works
+   piTable = NetworkTables.getTable("RaspberryPi")
+   
    # Initialize the camera
    cap = cv2.VideoCapture(0)
 
@@ -51,11 +54,12 @@ def main():
 
       pose = estimator.estimate(tagToFollow)
 
-      x, y, zRot = pose.X, pose.Y, pose.rotation.Z
+      x, y, z = pose.X, pose.Y, pose.Z
+      rotation = pose.rotation
          
-      smartDashboard.putNumberArray("transform", [x, y, zRot])
-         
-   
+      smartDashboard.putNumberArray("translation", [x, y, z])
+      piTable.putNumberArray("translation", [x, y, z])
+      piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows
    cap.release()
    cv2.destroyAllWindows()
