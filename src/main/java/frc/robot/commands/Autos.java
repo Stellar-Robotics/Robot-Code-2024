@@ -8,6 +8,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 import java.util.List;
 
@@ -21,12 +22,57 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
   public static Command exampleAuto(ExampleSubsystem subsystem) {
     return Commands.sequence(subsystem.exampleMethodCommand(), new ExampleCommand(subsystem));
+  }
+
+  public static Command visionAuto(DriveSubsystem driveSubsystem, VisionSubsystem vision) {
+    TrajectoryConfig config = new TrajectoryConfig(
+        AutoConstants.kMaxSpeedMetersPerSecond,
+        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        // Add kinematics to ensure max speed is actually obeyed
+        .setKinematics(DriveConstants.kDriveKinematics
+    );
+
+    var thetaController = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    SequentialCommandGroup command = new SequentialCommandGroup(
+      new RunCommand(() -> {
+
+        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+          driveSubsystem.getPose(),
+          List.of(),
+          new Pose2d(1.5, 1, new Rotation2d(0)),
+          config
+        );
+
+        SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+          trajectory,
+          driveSubsystem::getPose, // Functional interface to feed supplier
+          DriveConstants.kDriveKinematics,
+
+          // Position controllers
+          new PIDController(AutoConstants.kPXController, 0, 0),
+          new PIDController(AutoConstants.kPYController, 0, 0),
+          thetaController,
+          driveSubsystem::setModuleStates,
+          driveSubsystem
+        );
+        
+        swerveControllerCommand.execute();
+
+      }, vision, driveSubsystem));
+    
+      command.repeatedly();
+
+      return command;
   }
 
   public static Command baseAuto(DriveSubsystem drivetrain) {

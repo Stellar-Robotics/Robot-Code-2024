@@ -6,17 +6,30 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class VisionSubsystem extends SubsystemBase {
-  NetworkTableInstance ntInst = NetworkTableInstance.getDefault();
+  NetworkTableInstance nt;
+  NetworkTable table;
 
-  /** Creates a new VisionSubsystem. */
-  public VisionSubsystem() {}
-   //NetworkTableInstance inst = 
-    //NetworkTable piTable = inst.getTable("RaspberryPi");
-    //FloatArrayTopic translation = inst.getFloatArrayTopic("/RaspberryPi/translation");
-    //Topic rotation = inst.getTopic("/RaspberryPi/rotation");
+  DoubleSubscriber xSub;
+  DoubleSubscriber zSub;
+  DoubleSubscriber rotSub;
+
+  public VisionSubsystem() {
+        nt = NetworkTableInstance.getDefault();
+        table = nt.getTable("datatable");
+
+        xSub = table.getDoubleTopic("x").subscribe(0.0);
+        zSub = table.getDoubleTopic("z").subscribe(0.0);
+        rotSub = table.getDoubleTopic("rot").subscribe(0.0);
+
+        nt.startClient4("robot");
+        nt.setServer("localhost"); // where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+  }
+
   /**
    * Example command factory method.
    *
@@ -29,6 +42,18 @@ public class VisionSubsystem extends SubsystemBase {
         () -> {
           /* one-time action goes here */
         });
+  }
+
+  public double getAprilTagX(int tagId) {
+    return xSub.get();
+  }
+
+  public double getAprilTagZ(int tagId) {
+    return zSub.get();
+  }
+
+  public double getAprilTagRot(int tagId) {
+    return rotSub.get();
   }
 
   /**
