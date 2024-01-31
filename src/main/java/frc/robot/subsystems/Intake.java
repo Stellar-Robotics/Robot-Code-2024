@@ -2,12 +2,12 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-//import com.revrobotics.RelativeEncoder;
+import com.revrobotics.RelativeEncoder;
 
 public class Intake {
 
     private final CANSparkMax intakeMotorController;
-    //private final RelativeEncoder intake1_encoder;
+    private final RelativeEncoder intake1_encoder;
 
     public Intake(int intakeCanId) { // Constructor Function
 
@@ -18,10 +18,8 @@ public class Intake {
         intakeMotorController.restoreFactoryDefaults();
 
         // Grab the encoders of the motors
-        //intake1_encoder = intake1.getEncoder();
+        intake1_encoder = intakeMotorController.getEncoder();
 
-        // Motor encoder inversion option
-        //intake1_encoder.setInverted(false);
 
         // Flash motor configuration to the controllers
         intakeMotorController.burnFlash();
@@ -44,15 +42,15 @@ public class Intake {
 
     // Encoder operations
     public void resetEncoder() {
-        //intake1_encoder.setPosition(0);
+        intake1_encoder.setPosition(0);
     }
 
     public void setEncoder(double position) {
-       // intake1_encoder.setPosition(position);
+        intake1_encoder.setPosition(position);
     }
 
-    //public double getEncoderPos() {
-       // return intake1_encoder.getPosition();
-    //}
+    public double getEncoderPos() {
+        return intake1_encoder.getPosition();
+    }
      
 }
