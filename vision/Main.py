@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 import robotpy_apriltag as apriltag
-from networktables import NetworkTables
+import ntcore
 
 # To see messages from networktables, you must setup logging
-import logging
-logging.basicConfig(level=logging.DEBUG)
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
 
 def main():
    tagSize = 0.17 # meters
@@ -15,12 +15,19 @@ def main():
    focalLengthY = 655.66760244
 
    # Set up networktables
-   ip = "10.54.13.2"
-   NetworkTables.initialize(server=ip)
-   smartDashboard = NetworkTables.getTable("SmartDashboard")
+   #ip = "10.54.13.2"
+
+   inst = ntcore.NetworkTableInstance.getDefault()
+   inst.setServerTeam(5413)
+   inst.startClient4("raspberrypi")
+
+   smartDashboard = inst.getTable("SmartDashboard")
+   xTopic = smartDashboard.getDoubleTopic("x").publish()
+   zTopic = smartDashboard.getDoubleTopic("z").publish()
+   rotTopic = smartDashboard.getDoubleTopic("rot").publish()
 
    # Quinn trying to figure out how networktables works
-   piTable = NetworkTables.getTable("RaspberryPi")
+   #piTable = NetworkTables.getTable("RaspberryPi")
    
    # Initialize the camera
    cap = cv2.VideoCapture(0)
@@ -51,15 +58,19 @@ def main():
       # If the tag wasn't found, skip the rest of the loop
       if tagToFollow is None:
          continue
-
+      
+      
       pose = estimator.estimate(tagToFollow)
+      x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
 
-      x, y, z = pose.X, pose.Y, pose.Z
-      rotation = pose.rotation
-         
-      smartDashboard.putNumberArray("translation", [x, y, z])
-      piTable.putNumberArray("translation", [x, y, z])
-      piTable.putValue("rotation", rotation)
+
+      xTopic.set(x)
+      zTopic.set(z)
+      rotTopic.set(rotation)
+
+      #print(f"{x}, {y}, {rotation}")
+
+      #piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows
    cap.release()
    cv2.destroyAllWindows()
