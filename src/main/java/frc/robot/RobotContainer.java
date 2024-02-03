@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.OIConstants;
@@ -24,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem(new Pose2d(6, 6, new Rotation2d(-1.75)));
   private final VisionSubsystem visionSubsystem = new VisionSubsystem();
 
   // The driver's controller
@@ -94,6 +96,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.visionAuto(m_robotDrive, visionSubsystem).repeatedly();
+    return Autos.driveToStage(m_robotDrive);
   }
 }
