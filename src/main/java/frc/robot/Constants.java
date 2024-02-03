@@ -118,6 +118,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
     public static final double kDriveDeadband = 0.25;
     public static final double kRotDeadband = 0.70;
   }
@@ -141,10 +142,6 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 5676;
   }
 
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-  }
-
   public static class IntakeConstants {
     // Motor controller Id's
     public static final int intakeDriveControllerId = 58;
@@ -154,5 +151,25 @@ public final class Constants {
     public static final double intakeAngleP = 0.0001;
     public static final double intakeAngleI = 0;
     public static final double intakeAngleD = 0;
+
+    // Min and Max rotational angles
+    public static final double intakeMaxAngle = 90;
+    public static final double intakeMinAngle = 0;
+  }
+
+  public static class ShooterConstants {
+    // Motor contrller Id's
+    public static final int shooterDriveControllerID1 = 10;
+    public static final int shooterDriveControllerID2 = 11;
+    public static final int shooterAngleControllerID = 12;
+
+    // PID values for the shooter angle
+    public static final double shooterAngleP = 0.0001;
+    public static final double shooterAngleI = 0;
+    public static final double shooterAngleD = 0;
+
+    // Min and Max rotational angle
+    public static final double shooterMaxAngle = 90;
+    public static final double shooterMinAngle = 0;
   }
 }

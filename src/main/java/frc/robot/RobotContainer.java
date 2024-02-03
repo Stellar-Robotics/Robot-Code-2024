@@ -31,6 +31,7 @@ public class RobotContainer {
 
   // The driver's controller
   XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
+  XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -44,6 +45,7 @@ public class RobotContainer {
     mechSystem.setDefaultCommand(new RunCommand(() -> {
       //mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
       mechSystem.setIntakePower(MathUtil.applyDeadband(-driverController.getLeftTriggerAxis() + driverController.getRightTriggerAxis(), 0.10));
+      mechSystem.setShooterPower(MathUtil.applyDeadband(operatorController.getLeftY(), 0.20));
     }, mechSystem));
 
     // Configure default commands

@@ -27,6 +27,10 @@ public class Intake {
         intakeDrive.restoreFactoryDefaults();
         intakeAngle.restoreFactoryDefaults();
 
+        // Set current limits
+        intakeDrive.setSmartCurrentLimit(30, 30);
+        intakeAngle.setSmartCurrentLimit(30, 30);
+
         // Grab the encoders of the motors
         intakeAngleEncoder = intakeAngle.getEncoder();
 

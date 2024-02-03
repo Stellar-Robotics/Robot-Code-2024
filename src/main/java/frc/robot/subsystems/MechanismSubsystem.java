@@ -11,7 +11,7 @@ public class MechanismSubsystem extends SubsystemBase {
 
   // Define Mechanisms
   private final Intake intake = new Intake();
-  private final Shooter shooter = new Shooter(21);
+  private final Shooter shooter = new Shooter();
 
   /** Creates a new MechanismSubsystem. */
   public MechanismSubsystem() {}
@@ -22,6 +22,7 @@ public class MechanismSubsystem extends SubsystemBase {
 
     // DELETE THIS AFTER DEBUGGING!
     SmartDashboard.putNumber("IntakeAngle", intake.getAngleEncoderPos());
+    SmartDashboard.putNumber("ShooterAngle", shooter.getAngleEncoderPos());
   }
 
 
@@ -38,7 +39,11 @@ public class MechanismSubsystem extends SubsystemBase {
 
   // Shooter Setters
   public void setShooterPower(double shooterSpeed) {
-    shooter.setSpeed(shooterSpeed);
+    shooter.setDriveSpeed(shooterSpeed);
+  }
+
+  public void setShooterAngle(double angle) {
+    shooter.setTargetAngle(angle);
   }
 
   // Shooter Getters
