@@ -73,7 +73,7 @@ def main():
       pose = estimator.estimate(tagToFollow)
       x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
       robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
-      robotX, robotY, robotZ, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Z()
+      robotX, robotY, robotZ, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Y()
 
       robotPoseArray = np.array([robotX,robotZ,robotRotation])
 

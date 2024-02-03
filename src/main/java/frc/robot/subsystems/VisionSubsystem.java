@@ -90,7 +90,7 @@ public class VisionSubsystem extends SubsystemBase {
       return null;
     }
     Rotation2d rot = Rotation2d.fromRadians(poseArray[2]);
-    return new Pose2d(poseArray[1],poseArray[0], rot);
+    return new Pose2d(poseArray[0], poseArray[1], rot);
   }
 
   public void updateTrajectory() {

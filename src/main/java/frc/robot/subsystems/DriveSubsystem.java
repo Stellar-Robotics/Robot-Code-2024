@@ -13,6 +13,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.Timer;
@@ -64,8 +68,13 @@ public class DriveSubsystem extends SubsystemBase {
   // Target robot angle
   private Rotation2d targetRobotAngle = new Rotation2d(0);
 
+  DoubleArrayPublisher odometryPosePub;
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(Pose2d initialPoseMeters) {
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+    odometryPosePub = table.getDoubleArrayTopic("odometryRobotPose").publish();
+
     m_odometry = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
       Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)),
@@ -89,10 +98,14 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+
     Pose2d robotPose = vision.getRobotPose();
     if (robotPose != null) {
-      m_odometry.addVisionMeasurement(robotPose, Timer.getFPGATimestamp());
+      //m_odometry.addVisionMeasurement(robotPose, Timer.getFPGATimestamp());
     }
+
+    Pose2d pose = m_odometry.getEstimatedPosition();
+    odometryPosePub.set(new double[] {pose.getTranslation().getX(), pose.getTranslation().getY(), pose.getRotation().getRadians()});
   }
 
   /**
@@ -101,7 +114,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getEstimatedPosition();
+    //return m_odometry.getEstimatedPosition();
+    return vision.getRobotPose();
   }
 
   /**
