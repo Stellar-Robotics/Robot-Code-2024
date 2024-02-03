@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.Location;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -33,22 +34,57 @@ public final class Autos {
     return Commands.sequence(subsystem.exampleMethodCommand(), new ExampleCommand(subsystem));
   }
 
-  public static Command visionAuto(DriveSubsystem driveSubsystem, VisionSubsystem vision) {
+  public static TrajectoryConfig getTrajectoryConfig() {
     TrajectoryConfig config = new TrajectoryConfig(
       AutoConstants.kMaxSpeedMetersPerSecond,
       AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-      // Add kinematics to ensure max speed is actually obeyed
-      .setKinematics(DriveConstants.kDriveKinematics
+      .setKinematics(DriveConstants.kDriveKinematics);
+
+    return config;
+  }
+
+  public static ProfiledPIDController getThetaController() {
+    ProfiledPIDController thetaController = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    return thetaController;
+  }
+
+  public static SwerveControllerCommand driveToLocationCommand(Location location, DriveSubsystem drive) {
+    return driveToLocationCommand(location.pose, drive);
+  }
+
+  public static SwerveControllerCommand driveToLocationCommand(Pose2d targetPose, DriveSubsystem drive) {
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+      drive.getPose(),
+      List.of(),
+      targetPose,
+      getTrajectoryConfig()
     );
 
-    var thetaController = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    return new SwerveControllerCommand(
+      trajectory,
+      drive::getPose, // Functional interface to feed supplier
+      DriveConstants.kDriveKinematics,
+
+      // Position controllers
+      new PIDController(AutoConstants.kPXController, 0, 0),
+      new PIDController(AutoConstants.kPYController, 0, 0),
+      getThetaController(),
+      drive::setModuleStates,
+      drive
+    );
+  }
+
+  public static Command visionAuto(DriveSubsystem driveSubsystem, VisionSubsystem vision) {
+
 
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
       vision.getPose(),
       List.of(),
       new Pose2d(2, 0, new Rotation2d(0)),
-      config
+      getTrajectoryConfig()
     );
 
     return new SwerveControllerCommand(
@@ -59,11 +95,15 @@ public final class Autos {
       // Position controllers
       new PIDController(AutoConstants.kPXController, 0, 0),
       new PIDController(AutoConstants.kPYController, 0, 0),
-      thetaController,
+      getThetaController(),
       driveSubsystem::setModuleStates,
       driveSubsystem,
       vision
     );
+  }
+
+  public static Command driveToStage(DriveSubsystem drive) {
+    return driveToLocationCommand(Location.STAGE, drive).andThen(new RunCommand(() -> drive.drive(0, 0, 0, false, false)));
   }
 
   private Autos() {
