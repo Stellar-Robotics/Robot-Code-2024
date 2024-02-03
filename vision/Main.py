@@ -32,9 +32,6 @@ def main():
    rotTopic = smartDashboard.getDoubleTopic("rot").publish()
 
    absolutePoseTopic = smartDashboard.getDoubleArrayTopic("robotPose").publish()
-
-   # Quinn trying to figure out how networktables works
-   #piTable = NetworkTables.getTable("RaspberryPi")
    
    # Initialize the camera
    cap = cv2.VideoCapture(0)
@@ -46,6 +43,9 @@ def main():
    estimator = apriltag.AprilTagPoseEstimator(config)
    field = apriltag.AprilTagField.k2024Crescendo
    fieldLayout = apriltag.loadAprilTagLayoutField(field=field)
+   #fieldLayout = apriltag.AprilTagFieldLayout("./fieldLayout.json") # Uncomment if the load method doesn't work
+
+   print(fieldLayout.getTagPose(16))
 
    while True:
       # Capture a frame from the camera
@@ -66,6 +66,7 @@ def main():
 
       # If the tag wasn't found, skip the rest of the loop
       if tagToFollow is None:
+         absolutePoseTopic.set(np.array([]))
          continue
       
       
@@ -81,7 +82,7 @@ def main():
       rotTopic.set(rotation)
       absolutePoseTopic.set(robotPoseArray)
 
-      print(f"{x}, {y}, {rotation}")
+      print(f"{x}, {y}, {z}, {rotation}")
 
       #piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows

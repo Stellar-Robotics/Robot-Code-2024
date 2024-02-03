@@ -86,6 +86,9 @@ public class VisionSubsystem extends SubsystemBase {
    */
   public Pose2d getRobotPose() {
     double[] poseArray = absPoseSub.get();
+    if (poseArray.length <= 0) {
+      return null;
+    }
     Rotation2d rot = Rotation2d.fromRadians(poseArray[2]);
     return new Pose2d(poseArray[1],poseArray[0], rot);
   }
