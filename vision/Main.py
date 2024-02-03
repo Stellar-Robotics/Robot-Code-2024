@@ -7,6 +7,11 @@ import ntcore
 #import logging
 #logging.basicConfig(level=logging.DEBUG)
 
+def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose, tagId : int):
+    absoluteTagPose = fieldLayout.getTagPose(tagId)
+    return absoluteTagPose.transformBy(tagPose)
+    
+
 def main():
    tagSize = 0.17 # meters
    focalCenterX = 325.00253538
@@ -26,6 +31,8 @@ def main():
    zTopic = smartDashboard.getDoubleTopic("z").publish()
    rotTopic = smartDashboard.getDoubleTopic("rot").publish()
 
+   absolutePoseTopic = smartDashboard.getDoubleArrayTopic("robotPose").publish()
+
    # Quinn trying to figure out how networktables works
    #piTable = NetworkTables.getTable("RaspberryPi")
    
@@ -37,6 +44,8 @@ def main():
    detector.addFamily("tag36h11")
    config = apriltag.AprilTagPoseEstimator.Config(tagSize, focalLengthX, focalLengthY, focalCenterX, focalCenterY)
    estimator = apriltag.AprilTagPoseEstimator(config)
+   field = apriltag.AprilTagField.k2024Crescendo
+   fieldLayout = apriltag.loadAprilTagLayoutField(field=field)
 
    while True:
       # Capture a frame from the camera
@@ -53,7 +62,7 @@ def main():
       tags = detector.detect(gray)
       
       # Get tag id 1
-      tagToFollow = next(filter(lambda x: x.getId() == 1, tags), None)
+      tagToFollow = next(filter(lambda x: x.getId() == 16, tags), None)
 
       # If the tag wasn't found, skip the rest of the loop
       if tagToFollow is None:
@@ -62,11 +71,15 @@ def main():
       
       pose = estimator.estimate(tagToFollow)
       x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
+      robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
+      robotX, robotY, robotZ, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Z()
 
+      robotPoseArray = np.array([robotX,robotZ,robotRotation])
 
       xTopic.set(x)
       zTopic.set(z)
       rotTopic.set(rotation)
+      absolutePoseTopic.set(robotPoseArray)
 
       print(f"{x}, {y}, {rotation}")
 

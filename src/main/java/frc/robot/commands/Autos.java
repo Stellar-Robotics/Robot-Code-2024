@@ -66,65 +66,6 @@ public final class Autos {
     );
   }
 
-  public static Command baseAuto(DriveSubsystem drivetrain) {
-
-    // Create a vision subsystem
-    VisionSubsystem visionSubsystem = new VisionSubsystem();
-    Pose2d currentPose = drivetrain.getPose();
-    System.out.println(currentPose.getX());
-    double xVel = currentPose.getX();
-
-    double zStatus = visionSubsystem.getAprilTagZ(1);
-
-    if (zStatus >= 1.5) {
-      xVel += 0.2;
-    } else if (zStatus <= 1.3) {
-      xVel += -0.2;
-    }
-
-    // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(DriveConstants.kDriveKinematics);
-
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(currentPose.getX(), 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(/*new Translation2d(0, 0.5), 
-        new Translation2d(1, 0.5), 
-        new Translation2d(1, -0.5), 
-        new Translation2d(0,-0.5)*/),
-        // End 3 meters straight aphead of where we started, facing forward
-        new Pose2d(xVel, 0, new Rotation2d(0)),
-        config);
-
-    var thetaController = new ProfiledPIDController(
-        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
-        drivetrain::getPose, // Functional interface to feed supplier
-        DriveConstants.kDriveKinematics,
-
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        drivetrain::setModuleStates,
-        drivetrain);
-
-    // Reset odometry to the starting pose of the trajectory.
-    drivetrain.resetOdometry(exampleTrajectory.getInitialPose());
-
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> drivetrain.drive(0, 0, 0, false, false));
-  }
-
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
