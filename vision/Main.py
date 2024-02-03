@@ -41,9 +41,9 @@ def main():
    detector.addFamily("tag36h11")
    config = apriltag.AprilTagPoseEstimator.Config(tagSize, focalLengthX, focalLengthY, focalCenterX, focalCenterY)
    estimator = apriltag.AprilTagPoseEstimator(config)
-   field = apriltag.AprilTagField.k2024Crescendo
-   fieldLayout = apriltag.loadAprilTagLayoutField(field=field)
-   #fieldLayout = apriltag.AprilTagFieldLayout("./fieldLayout.json") # Uncomment if the load method doesn't work
+   #field = apriltag.AprilTagField.k2024Crescendo
+   #fieldLayout = apriltag.loadAprilTagLayoutField(field=field)
+   fieldLayout = apriltag.AprilTagFieldLayout("fieldLayout.json") # Uncomment if the load method doesn't work
 
    print(fieldLayout.getTagPose(16))
 
