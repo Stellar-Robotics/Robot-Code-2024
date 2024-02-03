@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -57,8 +58,17 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
+
   // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
+  VisionSubsystem vision = new VisionSubsystem();
+  SwerveDrivePoseEstimator m_odometry;
+
+  // Target robot angle
+  private Rotation2d targetRobotAngle = new Rotation2d(0);
+
+  /** Creates a new DriveSubsystem. */
+  public DriveSubsystem(Pose2d initialPoseMeters) {
+    m_odometry = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
       Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)),
       new SwerveModulePosition[] {
@@ -66,13 +76,8 @@ public class DriveSubsystem extends SubsystemBase {
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
-      });
-
-  // Target robot angle
-  private Rotation2d targetRobotAngle = new Rotation2d(0);
-
-  /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+      },
+      initialPoseMeters);
   }
 
   @Override
@@ -94,7 +99,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_odometry.getEstimatedPosition();
   }
 
   /**
@@ -127,15 +132,8 @@ public class DriveSubsystem extends SubsystemBase {
       robotAngle += 360;
     }
 
-    /*
-    if (Math.abs(angleX) + Math.abs(angleY) > 0) {
-      targetRobotAngle = new Rotation2d(Math.atan2(angleY, -angleX)).rotateBy(Rotation2d.fromDegrees((-90)));
-    }
-    */
     // minimum difference between current angle and target angle (allowing signed angle)
     double angleDiff = (targetRobotAngle.getDegrees() - robotAngle + 540) % 360 - 180;
-
-    //System.out.println("robot angle: " + robotAngle + " target angle: " + targetRobotAngle.getDegrees() + "diff: " + angleDiff);
 
     // P gain for angle control
     final double P = 0.01;
