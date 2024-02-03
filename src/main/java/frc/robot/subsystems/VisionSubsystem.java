@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -27,6 +28,7 @@ public class VisionSubsystem extends SubsystemBase {
   DoubleSubscriber xSub;
   DoubleSubscriber zSub;
   DoubleSubscriber rotSub;
+  DoubleArraySubscriber absPoseSub;
 
   public Trajectory targetTrajectory;
 
@@ -37,6 +39,7 @@ public class VisionSubsystem extends SubsystemBase {
         xSub = table.getDoubleTopic("x").subscribe(0.0);
         zSub = table.getDoubleTopic("z").subscribe(0.0);
         rotSub = table.getDoubleTopic("rot").subscribe(0.0);
+        absPoseSub = table.getDoubleArrayTopic("robotPose").subscribe(new double[0]);
 
         nt.startClient4("robot");
         nt.setServer("localhost"); // where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
@@ -74,6 +77,17 @@ public class VisionSubsystem extends SubsystemBase {
 
   public Pose2d getPose() {
     return new Pose2d(this.getAprilTagZ(1), this.getAprilTagX(1), new Rotation2d(this.getAprilTagRot(1)));
+  }
+
+  /**
+   * A method that gets the robot's absolute pose from visible AprilTags
+   * 
+   * @return the absolute pose of the robot based on visible AprilTags
+   */
+  public Pose2d getRobotPose() {
+    double[] poseArray = absPoseSub.get();
+    Rotation2d rot = Rotation2d.fromRadians(poseArray[2]);
+    return new Pose2d(poseArray[1],poseArray[0], rot);
   }
 
   public void updateTrajectory() {
