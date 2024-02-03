@@ -42,7 +42,7 @@ public class RobotContainer {
     // Control intake using right trigger - left trigger
     // Control shooter using right trigger - left trigger
     mechSystem.setDefaultCommand(new RunCommand(() -> {
-      mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
+      //mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
       mechSystem.setIntakePower(MathUtil.applyDeadband(-driverController.getLeftTriggerAxis() + driverController.getRightTriggerAxis(), 0.10));
     }, mechSystem));
 

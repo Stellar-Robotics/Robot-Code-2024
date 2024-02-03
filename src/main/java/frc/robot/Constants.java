@@ -144,4 +144,15 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class IntakeConstants {
+    // Motor controller Id's
+    public static final int intakeDriveControllerId = 58;
+    public static final int intakeAngleControllerId = 54;
+
+    // PID values for the intake angle
+    public static final double intakeAngleP = 0.0001;
+    public static final double intakeAngleI = 0;
+    public static final double intakeAngleD = 0;
+  }
 }

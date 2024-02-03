@@ -4,13 +4,14 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class MechanismSubsystem extends SubsystemBase {
 
   // Define Mechanisms
-  private final Intake floorIntake = new Intake(58);
-  private final Shooter shooter = new Shooter(54);
+  private final Intake intake = new Intake();
+  private final Shooter shooter = new Shooter(21);
 
   /** Creates a new MechanismSubsystem. */
   public MechanismSubsystem() {}
@@ -18,13 +19,28 @@ public class MechanismSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    // DELETE THIS AFTER DEBUGGING!
+    SmartDashboard.putNumber("IntakeAngle", intake.getAngleEncoderPos());
   }
 
+
+  // Intake Setters
   public void setIntakePower(double xSpeed) {
-    floorIntake.setSpeed(xSpeed);
+    intake.setDriveSpeed(xSpeed);
   }
 
+  public void setIntakeAngle(double angle) {
+    intake.setTargetAngle(angle);
+  }
+
+  // Intake Getters
+
+  // Shooter Setters
   public void setShooterPower(double shooterSpeed) {
     shooter.setSpeed(shooterSpeed);
   }
+
+  // Shooter Getters
+
 }
