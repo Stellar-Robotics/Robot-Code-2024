@@ -68,7 +68,7 @@ def main():
       zTopic.set(z)
       rotTopic.set(rotation)
 
-      #print(f"{x}, {y}, {rotation}")
+      print(f"{x}, {y}, {rotation}")
 
       #piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows

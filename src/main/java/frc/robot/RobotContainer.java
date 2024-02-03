@@ -13,6 +13,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /*
@@ -35,6 +36,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    
 
     
 
@@ -63,6 +66,10 @@ public class RobotContainer {
                 true, true),
             m_robotDrive));
         */
+
+    /*visionSubsystem.setDefaultCommand(
+      new RunCommand(() -> visionSubsystem.getAprilTagZ(1), visionSubsystem)
+    );*/
   }
 
   /**
@@ -87,6 +94,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.baseAuto(m_robotDrive);
+    return Autos.visionAuto(m_robotDrive, visionSubsystem).repeatedly();
   }
 }

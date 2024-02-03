@@ -6,6 +6,17 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
+
+import java.util.List;
+
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -18,9 +29,11 @@ public class VisionSubsystem extends SubsystemBase {
   DoubleSubscriber zSub;
   DoubleSubscriber rotSub;
 
+  public Trajectory targetTrajectory;
+
   public VisionSubsystem() {
         nt = NetworkTableInstance.getDefault();
-        table = nt.getTable("datatable");
+        table = nt.getTable("SmartDashboard");
 
         xSub = table.getDoubleTopic("x").subscribe(0.0);
         zSub = table.getDoubleTopic("z").subscribe(0.0);
@@ -28,6 +41,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         nt.startClient4("robot");
         nt.setServer("localhost"); // where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+        System.out.println();
   }
 
   /**
@@ -49,11 +63,34 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getAprilTagZ(int tagId) {
-    return zSub.get();
+    double z = -zSub.get();
+    System.out.println(z);
+    return z;
   }
 
   public double getAprilTagRot(int tagId) {
-    return rotSub.get();
+    return 0;
+    //return rotSub.get();
+  }
+
+  public Pose2d getPose() {
+    return new Pose2d(this.getAprilTagZ(1), this.getAprilTagX(1), new Rotation2d(this.getAprilTagRot(1)));
+  }
+
+  public void updateTrajectory() {
+    TrajectoryConfig config = new TrajectoryConfig(
+      AutoConstants.kMaxSpeedMetersPerSecond,
+      AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+      // Add kinematics to ensure max speed is actually obeyed
+      .setKinematics(DriveConstants.kDriveKinematics
+    );
+
+    this.targetTrajectory = TrajectoryGenerator.generateTrajectory(
+      this.getPose(),
+      List.of(),
+      new Pose2d(2, 0, new Rotation2d(0)),
+      config
+    );
   }
 
   /**
