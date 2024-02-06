@@ -62,7 +62,7 @@ def main():
       tags = detector.detect(gray)
       
       # Get tag id 1
-      tagToFollow = next(filter(lambda x: x.getId() == 16, tags), None)
+      tagToFollow = next(filter(lambda x: x.getId() == 6, tags), None)
 
       # If the tag wasn't found, skip the rest of the loop
       if tagToFollow is None:
@@ -73,16 +73,18 @@ def main():
       pose = estimator.estimate(tagToFollow)
       x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
       robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
-      robotX, robotY, robotZ, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Y()
+      robotN, robotW, robotU, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Z()
+      robotX = 8.211 - robotW
 
-      robotPoseArray = np.array([robotX,robotZ,robotRotation])
+      robotPoseArray = np.array([robotX,robotN,robotRotation])
 
       xTopic.set(x)
       zTopic.set(z)
       rotTopic.set(rotation)
       absolutePoseTopic.set(robotPoseArray)
 
-      print(f"{x}, {y}, {z}, {rotation}")
+      #print(f"{x}, {y}, {z}, {rotation}")
+      print(f"Robot Coordinates (NWU): {robotN}, {robotW}, {robotU}, {rotation}")
 
       #piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows
