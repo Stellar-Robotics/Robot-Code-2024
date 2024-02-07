@@ -112,6 +112,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveWithAbsoluteAngle(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {
+    System.out.println("lx: " + xSpeed + ", ly: " + ySpeed + ", rx: " + angleX + ", ry: " + angleY);
+    
     double hype = Math.sqrt(Math.pow(angleX, 2) + Math.pow(angleY, 2));
 
     if (hype > OIConstants.kRotDeadband) {
@@ -132,7 +134,7 @@ public class DriveSubsystem extends SubsystemBase {
     // minimum difference between current angle and target angle (allowing signed angle)
     double angleDiff = (targetRobotAngle.getDegrees() - robotAngle + 540) % 360 - 180;
 
-    System.out.println("robot angle: " + robotAngle + " target angle: " + targetRobotAngle.getDegrees() + "diff: " + angleDiff);
+    //System.out.println("robot angle: " + robotAngle + " target angle: " + targetRobotAngle.getDegrees() + "diff: " + angleDiff);
 
     // P gain for angle control
     final double P = 0.01;
