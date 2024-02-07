@@ -11,6 +11,9 @@ def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPo
     absoluteTagPose = fieldLayout.getTagPose(tagId)
     return absoluteTagPose.transformBy(tagPose.inverse())
     
+    #absRobotW = absoluteTagPose.Y() - tagPose.Y()
+    #absRobotN = absoluteTagPose.X() - tagPose.X()
+    #absRobotU = absoluteTagPose.Z() - tagPose.Z()
 
 def main():
    tagSize = 0.17 # meters
@@ -41,9 +44,9 @@ def main():
    detector.addFamily("tag36h11")
    config = apriltag.AprilTagPoseEstimator.Config(tagSize, focalLengthX, focalLengthY, focalCenterX, focalCenterY)
    estimator = apriltag.AprilTagPoseEstimator(config)
-   field = apriltag.AprilTagField.k2024Crescendo
-   fieldLayout = apriltag.loadAprilTagLayoutField(field=field)
-   #fieldLayout = apriltag.AprilTagFieldLayout("./fieldLayout.json") # Uncomment if the load method doesn't work
+   #field = apriltag.AprilTagField.k2024Crescendo
+   #fieldLayout = apriltag.loadAprilTagLayoutField(field=field)
+   fieldLayout = apriltag.AprilTagFieldLayout("fieldLayout.json") # Uncomment if the load method doesn't work
 
    print(fieldLayout.getTagPose(16))
 
@@ -73,16 +76,18 @@ def main():
       pose = estimator.estimate(tagToFollow)
       x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
       robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
-      robotX, robotY, robotZ, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Z()
+      robotN, robotW, robotU, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Z()
+      #robotX = 
 
-      robotPoseArray = np.array([robotX,robotZ,robotRotation])
+      robotPoseArray = np.array([robotU,robotN,robotRotation])
 
       xTopic.set(x)
       zTopic.set(z)
       rotTopic.set(rotation)
       absolutePoseTopic.set(robotPoseArray)
 
-      print(f"{x}, {y}, {z}, {rotation}")
+      #print(f"{x}, {y}, {z}, {rotation}")
+      print(f"Robot Coordinates (NWU): {robotN}, {robotW}, {robotU}, {rotation}")
 
       #piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows

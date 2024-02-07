@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem(new Pose2d(6, 6, new Rotation2d(-1.75)));
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem(new Pose2d(6, 6, new Rotation2d(-1)));
   private final VisionSubsystem visionSubsystem = new VisionSubsystem();
 
   // The driver's controller
