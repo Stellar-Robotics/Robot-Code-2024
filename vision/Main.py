@@ -9,7 +9,7 @@ import ntcore
 
 def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose, tagId : int):
     absoluteTagPose = fieldLayout.getTagPose(tagId)
-    return absoluteTagPose.transformBy(tagPose)
+    return absoluteTagPose.transformBy(tagPose.inverse())
     
 
 def main():
@@ -61,7 +61,7 @@ def main():
       # Detect AprilTags in the grayscale frame
       tags = detector.detect(gray)
       
-      # Get tag id 1
+      #
       tagToFollow = next(filter(lambda x: x.getId() == 16, tags), None)
 
       # If the tag wasn't found, skip the rest of the loop
