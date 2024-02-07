@@ -2,14 +2,15 @@ import cv2
 import numpy as np
 import robotpy_apriltag as apriltag
 import ntcore
+from wpimath.geometry import *
 
-# To see messages from networktables, you must setup logging
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
 
 def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose, tagId : int):
     absoluteTagPose = fieldLayout.getTagPose(tagId)
-    return absoluteTagPose.transformBy(tagPose.inverse())
+    # coordinates from pose estimator are EDN?
+    relativeTagPose = Transform3d(Translation3d(tagPose.Z(), tagPose.Y(), tagPose.Z()), Rotation3d(tagPose.rotation().Z(), tagPose.rotation().Y(), tagPose.rotation().X()))
+
+    return absoluteTagPose.transformBy(relativeTagPose.inverse())
     
     #absRobotW = absoluteTagPose.Y() - tagPose.Y()
     #absRobotN = absoluteTagPose.X() - tagPose.X()
@@ -21,9 +22,6 @@ def main():
    focalCenterY = 235.65891798
    focalLengthX = 656.29804936
    focalLengthY = 655.66760244
-
-   # Set up networktables
-   #ip = "10.54.13.2"
 
    inst = ntcore.NetworkTableInstance.getDefault()
    inst.setServerTeam(5413)
@@ -74,7 +72,9 @@ def main():
       
       
       pose = estimator.estimate(tagToFollow)
+
       x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
+
       robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
       robotN, robotW, robotU, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Z()
       #robotX = 
@@ -87,7 +87,7 @@ def main():
       absolutePoseTopic.set(robotPoseArray)
 
       #print(f"{x}, {y}, {z}, {rotation}")
-      print(f"Robot Coordinates (NWU): {robotN}, {robotW}, {robotU}, {rotation}")
+      print(f"Robot Coordinates (NWU): {robotN}, {robotW}, {robotU}, {rotation} - Tag pose (EDN?): {x}, {y}, {z}")
 
       #piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows
