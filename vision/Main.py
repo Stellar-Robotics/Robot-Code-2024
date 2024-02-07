@@ -9,8 +9,10 @@ import ntcore
 
 def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose, tagId : int):
     absoluteTagPose = fieldLayout.getTagPose(tagId)
-    return absoluteTagPose.transformBy(tagPose)
-    
+    return absoluteTagPose.transformBy(tagPose.inverse())
+    #absRobotW = absoluteTagPose.Y() - tagPose.Y()
+    #absRobotN = absoluteTagPose.X() - tagPose.X()
+    #absRobotU = absoluteTagPose.Z() - tagPose.Z()
 
 def main():
    tagSize = 0.17 # meters
@@ -74,7 +76,7 @@ def main():
       x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
       robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
       robotN, robotW, robotU, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Z()
-      robotX = 8.211 - robotW
+      robotX = 
 
       robotPoseArray = np.array([robotX,robotN,robotRotation])
 
