@@ -111,14 +111,16 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
-  public void driveWithAbsoluteAngle(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {
-    System.out.println("lx: " + xSpeed + ", ly: " + ySpeed + ", rx: " + angleX + ", ry: " + angleY);
+  public void driveWithAbsoluteAngle(double xSpeed, double ySpeed, double angleX, boolean fieldRelative, boolean rateLimit) {
+    System.out.println("lx: " + xSpeed + ", ly: " + ySpeed + ", angle: " + angleX);
     
-    double hype = Math.sqrt(Math.pow(angleX, 2) + Math.pow(angleY, 2));
+    /*double hype = Math.sqrt(Math.pow(angleX, 2) + Math.pow(angleY, 2));
 
     if (hype > OIConstants.kRotDeadband) {
       targetRobotAngle = new Rotation2d(Math.atan2(angleY, -angleX)).rotateBy(Rotation2d.fromDegrees((-90)));
-    }
+    }*/
+
+    targetRobotAngle = Rotation2d.fromDegrees(angleX);
 
     double robotAngle = m_gyro.getAngle(IMUAxis.kZ) % 360;
 

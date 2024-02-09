@@ -80,10 +80,11 @@ public class StellarController extends GenericHID {
     kLeftY(0),
     /** Right Y. */
     kRightY(4),
-    /** Left trigger. */
-    kLeftTrigger(2),
-    /** Right trigger. */
-    kRightTrigger(3);
+    /** Left rotary encoder. */
+    kLeftRotary(5),
+    // Right rotary encoder.
+    kRightRotary(2);
+  
 
     /** Axis value. */
     public final int value;
@@ -155,102 +156,6 @@ public class StellarController extends GenericHID {
    */
   public double getRightY() {
     return getRawAxis(Axis.kRightY.value);
-  }
-
-  /**
-   * Get the left trigger (LT) axis value of the controller. Note that this axis is bound to the
-   * range of [0, 1] as opposed to the usual [-1, 1].
-   *
-   * @return The axis value.
-   */
-  public double getLeftTriggerAxis() {
-    return getRawAxis(Axis.kLeftTrigger.value);
-  }
-
-  /**
-   * Get the right trigger (RT) axis value of the controller. Note that this axis is bound to the
-   * range of [0, 1] as opposed to the usual [-1, 1].
-   *
-   * @return The axis value.
-   */
-  public double getRightTriggerAxis() {
-    return getRawAxis(Axis.kRightTrigger.value);
-  }
-
-  /**
-   * Read the value of the left bumper (LB) button on the controller.
-   *
-   * @return The state of the button.
-   */
-  public boolean getLeftBumper() {
-    return getRawButton(Button.kLeftBumper.value);
-  }
-
-  /**
-   * Read the value of the right bumper (RB) button on the controller.
-   *
-   * @return The state of the button.
-   */
-  public boolean getRightBumper() {
-    return getRawButton(Button.kRightBumper.value);
-  }
-
-  /**
-   * Whether the left bumper (LB) was pressed since the last check.
-   *
-   * @return Whether the button was pressed since the last check.
-   */
-  public boolean getLeftBumperPressed() {
-    return getRawButtonPressed(Button.kLeftBumper.value);
-  }
-
-  /**
-   * Whether the right bumper (RB) was pressed since the last check.
-   *
-   * @return Whether the button was pressed since the last check.
-   */
-  public boolean getRightBumperPressed() {
-    return getRawButtonPressed(Button.kRightBumper.value);
-  }
-
-  /**
-   * Whether the left bumper (LB) was released since the last check.
-   *
-   * @return Whether the button was released since the last check.
-   */
-  public boolean getLeftBumperReleased() {
-    return getRawButtonReleased(Button.kLeftBumper.value);
-  }
-
-  /**
-   * Whether the right bumper (RB) was released since the last check.
-   *
-   * @return Whether the button was released since the last check.
-   */
-  public boolean getRightBumperReleased() {
-    return getRawButtonReleased(Button.kRightBumper.value);
-  }
-
-  /**
-   * Constructs an event instance around the right bumper's digital signal.
-   *
-   * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the right bumper's digital signal attached to the given
-   *     loop.
-   */
-  public BooleanEvent leftBumper(EventLoop loop) {
-    return new BooleanEvent(loop, this::getLeftBumper);
-  }
-
-  /**
-   * Constructs an event instance around the left bumper's digital signal.
-   *
-   * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the left bumper's digital signal attached to the given
-   *     loop.
-   */
-  public BooleanEvent rightBumper(EventLoop loop) {
-    return new BooleanEvent(loop, this::getRightBumper);
   }
 
   /**
@@ -327,6 +232,24 @@ public class StellarController extends GenericHID {
    */
   public BooleanEvent rightStick(EventLoop loop) {
     return new BooleanEvent(loop, this::getRightStickButton);
+  }
+
+  /**
+   * Get the angle of the left rotary encoder
+   *
+   * @return The angle in degrees.
+   */
+  public double getLeftRotary() {
+    return -(getRawAxis(Axis.kLeftRotary.value) * 180 + 180);
+  }
+
+  /**
+   * Get the angle of the right rotary encoder
+   *
+   * @return The angle in degrees.
+   */
+  public double getRightRotary() {
+    return (getRawAxis(Axis.kRightRotary.value) + 1) * 180;
   }
 
   /**
@@ -483,133 +406,5 @@ public class StellarController extends GenericHID {
   @SuppressWarnings("MethodName")
   public BooleanEvent y(EventLoop loop) {
     return new BooleanEvent(loop, this::getYButton);
-  }
-
-  /**
-   * Read the value of the back button on the controller.
-   *
-   * @return The state of the button.
-   */
-  public boolean getBackButton() {
-    return getRawButton(Button.kBack.value);
-  }
-
-  /**
-   * Whether the back button was pressed since the last check.
-   *
-   * @return Whether the button was pressed since the last check.
-   */
-  public boolean getBackButtonPressed() {
-    return getRawButtonPressed(Button.kBack.value);
-  }
-
-  /**
-   * Whether the back button was released since the last check.
-   *
-   * @return Whether the button was released since the last check.
-   */
-  public boolean getBackButtonReleased() {
-    return getRawButtonReleased(Button.kBack.value);
-  }
-
-  /**
-   * Constructs an event instance around the back button's digital signal.
-   *
-   * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the back button's digital signal attached to the given
-   *     loop.
-   */
-  public BooleanEvent back(EventLoop loop) {
-    return new BooleanEvent(loop, this::getBackButton);
-  }
-
-  /**
-   * Read the value of the start button on the controller.
-   *
-   * @return The state of the button.
-   */
-  public boolean getStartButton() {
-    return getRawButton(Button.kStart.value);
-  }
-
-  /**
-   * Whether the start button was pressed since the last check.
-   *
-   * @return Whether the button was pressed since the last check.
-   */
-  public boolean getStartButtonPressed() {
-    return getRawButtonPressed(Button.kStart.value);
-  }
-
-  /**
-   * Whether the start button was released since the last check.
-   *
-   * @return Whether the button was released since the last check.
-   */
-  public boolean getStartButtonReleased() {
-    return getRawButtonReleased(Button.kStart.value);
-  }
-
-  /**
-   * Constructs an event instance around the start button's digital signal.
-   *
-   * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the start button's digital signal attached to the given
-   *     loop.
-   */
-  public BooleanEvent start(EventLoop loop) {
-    return new BooleanEvent(loop, this::getStartButton);
-  }
-
-  /**
-   * Constructs an event instance around the axis value of the left trigger. The returned trigger
-   * will be true when the axis value is greater than {@code threshold}.
-   *
-   * @param threshold the minimum axis value for the returned {@link BooleanEvent} to be true. This
-   *     value should be in the range [0, 1] where 0 is the unpressed state of the axis.
-   * @param loop the event loop instance to attach the event to.
-   * @return an event instance that is true when the left trigger's axis exceeds the provided
-   *     threshold, attached to the given event loop
-   */
-  public BooleanEvent leftTrigger(double threshold, EventLoop loop) {
-    return new BooleanEvent(loop, () -> getLeftTriggerAxis() > threshold);
-  }
-
-  /**
-   * Constructs an event instance around the axis value of the left trigger. The returned trigger
-   * will be true when the axis value is greater than 0.5.
-   *
-   * @param loop the event loop instance to attach the event to.
-   * @return an event instance that is true when the left trigger's axis exceeds the provided
-   *     threshold, attached to the given event loop
-   */
-  public BooleanEvent leftTrigger(EventLoop loop) {
-    return leftTrigger(0.5, loop);
-  }
-
-  /**
-   * Constructs an event instance around the axis value of the right trigger. The returned trigger
-   * will be true when the axis value is greater than {@code threshold}.
-   *
-   * @param threshold the minimum axis value for the returned {@link BooleanEvent} to be true. This
-   *     value should be in the range [0, 1] where 0 is the unpressed state of the axis.
-   * @param loop the event loop instance to attach the event to.
-   * @return an event instance that is true when the right trigger's axis exceeds the provided
-   *     threshold, attached to the given event loop
-   */
-  public BooleanEvent rightTrigger(double threshold, EventLoop loop) {
-    return new BooleanEvent(loop, () -> getRightTriggerAxis() > threshold);
-  }
-
-  /**
-   * Constructs an event instance around the axis value of the right trigger. The returned trigger
-   * will be true when the axis value is greater than 0.5.
-   *
-   * @param loop the event loop instance to attach the event to.
-   * @return an event instance that is true when the right trigger's axis exceeds the provided
-   *     threshold, attached to the given event loop
-   */
-  public BooleanEvent rightTrigger(EventLoop loop) {
-    return rightTrigger(0.5, loop);
   }
 }

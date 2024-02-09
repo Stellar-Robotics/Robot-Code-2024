@@ -54,8 +54,7 @@ public class RobotContainer {
             () -> m_robotDrive.driveWithAbsoluteAngle(
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -m_driverController.getRightX(),
-                -m_driverController.getRightY(),
+                m_driverController.getRightRotary(),
                 true, true),
             m_robotDrive));
 
