@@ -4,13 +4,11 @@ import robotpy_apriltag as apriltag
 import ntcore
 from wpimath.geometry import *
 
-
-def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose, tagId : int):
-    absoluteTagPose = fieldLayout.getTagPose(tagId)
-    # coordinates from pose estimator are EDN?
-    relativeTagPose = Transform3d(Translation3d(tagPose.Z(), tagPose.Y(), tagPose.Z()), Rotation3d(tagPose.rotation().Z(), tagPose.rotation().Y(), tagPose.rotation().X()))
-
-    return absoluteTagPose.transformBy(relativeTagPose.inverse())
+def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose : Transform3d, tagId : int):
+    # closest thing to assumed odometry coordinate system is EDN, so we'll convert the absolute pose to that
+    absoluteTagPose = CoordinateSystem.convert(fieldLayout.getTagPose(tagId),CoordinateSystem.NWU(),CoordinateSystem.EDN())
+    
+    return absoluteTagPose.transformBy(tagPose.inverse())
     
     #absRobotW = absoluteTagPose.Y() - tagPose.Y()
     #absRobotN = absoluteTagPose.X() - tagPose.X()
@@ -76,10 +74,11 @@ def main():
       x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
 
       robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
-      robotN, robotW, robotU, robotRotation = robotPose.X(),robotPose.Y(),robotPose.Z(),robotPose.rotation().Z()
-      #robotX = 
+      robotX, robotZ, robotRotation = robotPose.X(),robotPose.Z(),robotPose.rotation().Z()
+      # Get the Y from NWU since the normal coordinate system is EDN
+      robotY = CoordinateSystem.convert(robotPose, CoordinateSystem.EDN(), CoordinateSystem.NWU()).Y() 
 
-      robotPoseArray = np.array([robotU,robotN,robotRotation])
+      robotPoseArray = np.array([robotX,robotZ,robotRotation])
 
       xTopic.set(x)
       zTopic.set(z)
@@ -87,7 +86,7 @@ def main():
       absolutePoseTopic.set(robotPoseArray)
 
       #print(f"{x}, {y}, {z}, {rotation}")
-      print(f"Robot Coordinates (NWU): {robotN}, {robotW}, {robotU}, {rotation} - Tag pose (EDN?): {x}, {y}, {z}")
+      print(f"Robot Coordinates (EUN): {robotX}, {robotY}, {robotZ}, {rotation} - Tag pose (EDN?): {x}, {y}, {z}")
 
       #piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows
