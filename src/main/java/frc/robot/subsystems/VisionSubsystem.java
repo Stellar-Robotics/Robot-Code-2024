@@ -65,14 +65,14 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getAprilTagZ(int tagId) {
-    double z = -zSub.get();
+    double z = zSub.get();
     System.out.println(z);
     return z;
   }
 
   public double getAprilTagRot(int tagId) {
-    return 0;
-    //return rotSub.get();
+    //return 0;
+    return rotSub.get();
   }
 
   public Pose2d getPose() {
@@ -80,17 +80,18 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   /**
-   * A method that gets the robot's absolute pose from visible AprilTags
+   * A method that gets the robot's absolute pose from visible AprilTags. 
    * 
    * @return the absolute pose of the robot based on visible AprilTags
    */
   public Pose2d getRobotPose() {
+    //Index 0 is x, 1 is z, and 2 is the rotation in radians
     double[] poseArray = absPoseSub.get();
     if (poseArray.length <= 0) {
       return null;
     }
     Rotation2d rot = Rotation2d.fromRadians(poseArray[2]);
-    return new Pose2d(poseArray[0], poseArray[1], rot);
+    return new Pose2d(poseArray[1], poseArray[0], rot);
   }
 
   public void updateTrajectory() {
