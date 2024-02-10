@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.OIConstants;
@@ -14,7 +16,6 @@ import frc.robot.subsystems.MechanismSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -26,10 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem driveSystem = new DriveSubsystem();
-
-  private final MechanismSubsystem mechSystem = new MechanismSubsystem();
-
+  private final DriveSubsystem driveSystem = new DriveSubsystem(new Pose2d(6, 6, new Rotation2d(-1)));
   // The driver's controller
   XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
   XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
@@ -41,13 +39,18 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    
+
+    
+
     // Control intake using right trigger - left trigger
     // Control shooter using right trigger - left trigger
+    /*
     mechSystem.setDefaultCommand(new RunCommand(() -> {
       //mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
       mechSystem.setIntakePower(MathUtil.applyDeadband(-driverController.getLeftTriggerAxis() + driverController.getRightTriggerAxis(), 0.10));
       mechSystem.setShooterPower(MathUtil.applyDeadband(operatorController.getLeftY(), 0.20));
-    }, mechSystem));
+    }, mechSystem));*/
 
     // Configure default commands
     driveSystem.setDefaultCommand(
@@ -55,16 +58,18 @@ public class RobotContainer {
         // The left stick controls translation of the robot.
         // Turning is controlled by the right stick.
         new RunCommand(
-            () -> driveSystem.driveWithAbsoluteAngle(
-                -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -driverController.getRightX(),
-                -driverController.getRightY(),
-                true, true), driveSystem),
-        new RunCommand(() -> driveSystem.driveWithAim(
-                -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-        ), driveSystem), null));
+          () -> driveSystem.driveWithJoystick(
+            -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+            -driverController.getRightX(),
+            -driverController.getRightY(),
+            true, true), driveSystem),
+        new RunCommand(
+          () -> driveSystem.driveWithAim(
+            -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband)
+            ), driveSystem),
+        driverController::getAButton));
   }
 
   /**
@@ -84,6 +89,10 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
+    /*visionSubsystem.setDefaultCommand(
+      new RunCommand(() -> visionSubsystem.getAprilTagZ(1), visionSubsystem)
+    );*/
   }
 
   /**

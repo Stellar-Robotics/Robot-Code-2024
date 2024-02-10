@@ -4,15 +4,18 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
@@ -55,8 +58,24 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
+
   // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
+  VisionSubsystem vision = new VisionSubsystem();
+  SwerveDrivePoseEstimator m_odometry;
+
+  // Target robot angle
+  private Rotation2d targetRobotAngle = new Rotation2d(0);
+
+  private final PIDController aimBot = new PIDController(0.0001, 0, 0);
+
+  DoubleArrayPublisher odometryPosePub;
+
+  /** Creates a new DriveSubsystem. */
+  public DriveSubsystem(Pose2d initialPoseMeters) {
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+    odometryPosePub = table.getDoubleArrayTopic("odometryRobotPose").publish();
+
+    m_odometry = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
       Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)),
       new SwerveModulePosition[] {
@@ -64,12 +83,9 @@ public class DriveSubsystem extends SubsystemBase {
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
-      });
-
-  // Target robot angle
-  private Rotation2d targetRobotAngle = new Rotation2d(0);
-
-  private final PIDController aimBot = new PIDController(0.0001, 0, 0);
+      },
+      initialPoseMeters);
+  }
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -86,6 +102,14 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+
+    Pose2d robotPose = vision.getRobotPose();
+    if (robotPose != null) {
+      //m_odometry.addVisionMeasurement(robotPose, Timer.getFPGATimestamp());
+    }
+
+    Pose2d pose = m_odometry.getEstimatedPosition();
+    odometryPosePub.set(new double[] {pose.getTranslation().getX(), pose.getTranslation().getY(), pose.getRotation().getRadians()});
   }
 
   /**
@@ -94,7 +118,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    //return m_odometry.getEstimatedPosition();
+    return vision.getRobotPose();
   }
 
   /**
