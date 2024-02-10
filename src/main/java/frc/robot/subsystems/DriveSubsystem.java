@@ -66,6 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Target robot angle
   private Rotation2d targetRobotAngle = new Rotation2d(0);
 
+  private final PIDController manualAnglePID = new PIDController(0.0001, 0, 0);
   private final PIDController aimBot = new PIDController(0.0001, 0, 0);
 
   DoubleArrayPublisher odometryPosePub;
@@ -156,13 +157,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     double rotationRate = angleDiff * P; */
 
-    drive(xSpeed, ySpeed, aimBot.calculate(-angleDiff, 0), fieldRelative, rateLimit);
+    drive(xSpeed, ySpeed, manualAnglePID.calculate(-angleDiff, 0), fieldRelative, rateLimit);
   }
 
-  public void driveWithAim(double xSpeed, double ySpeed) {
-
-
-    drive(xSpeed, ySpeed, rotationRate, fieldRelative, rateLimit);
+  public void driveWithAim(double xSpeed, double ySpeed, int aprilTagId, boolean fieldRelative, boolean rateLimit) {
+    drive(xSpeed, ySpeed, aimBot.calculate(vision.getAprilTagX(aprilTagId), 0), fieldRelative, rateLimit);
   }
 
   public void driveWithJoystick(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {

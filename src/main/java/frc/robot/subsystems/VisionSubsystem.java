@@ -60,24 +60,10 @@ public class VisionSubsystem extends SubsystemBase {
         });
   }
 
-  public double getAprilTagX(int tagId) {
-    return xSub.get();
+  public double getAprilTagX(int tagId) throws Exception {
+    throw new Exception("Add logic for this method to return the x position of the AprilTag *in the camera frame*!");
   }
 
-  public double getAprilTagZ(int tagId) {
-    double z = zSub.get();
-    System.out.println(z);
-    return z;
-  }
-
-  public double getAprilTagRot(int tagId) {
-    //return 0;
-    return rotSub.get();
-  }
-
-  public Pose2d getPose() {
-    return new Pose2d(this.getAprilTagZ(1), this.getAprilTagX(1), new Rotation2d(this.getAprilTagRot(1)));
-  }
 
   /**
    * A method that gets the robot's absolute pose from visible AprilTags. 

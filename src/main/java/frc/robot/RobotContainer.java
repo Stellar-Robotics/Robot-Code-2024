@@ -39,10 +39,6 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    
-
-    
-
     // Control intake using right trigger - left trigger
     // Control shooter using right trigger - left trigger
     /*
@@ -52,7 +48,8 @@ public class RobotContainer {
       mechSystem.setShooterPower(MathUtil.applyDeadband(operatorController.getLeftY(), 0.20));
     }, mechSystem));*/
 
-    // Configure default commands
+    // Configure the drive command - if the A button is pressed aim at an AprilTag,
+    // otherwise respond to driver inputs to control angle.
     driveSystem.setDefaultCommand(
       new ConditionalCommand(         
         // The left stick controls translation of the robot.
@@ -63,13 +60,19 @@ public class RobotContainer {
             -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
             -driverController.getRightX(),
             -driverController.getRightY(),
-            true, true), driveSystem),
+            true, true), driveSystem
+        ),
         new RunCommand(
           () -> driveSystem.driveWithAim(
             -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband)
-            ), driveSystem),
-        driverController::getAButton));
+            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+            1, // what AprilTag to target???
+            true, true
+            ), driveSystem
+        ),
+        driverController::getAButton
+      )
+    );
   }
 
   /**
