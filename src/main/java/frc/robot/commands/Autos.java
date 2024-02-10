@@ -8,31 +8,22 @@ import frc.robot.Location;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 import java.util.List;
-import java.util.spi.CurrencyNameProvider;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 public final class Autos {
-  /** Example static factory for an autonomous command. */
-  public static Command exampleAuto(ExampleSubsystem subsystem) {
-    return Commands.sequence(subsystem.exampleMethodCommand(), new ExampleCommand(subsystem));
-  }
 
   public static TrajectoryConfig getTrajectoryConfig() {
     TrajectoryConfig config = new TrajectoryConfig(
@@ -78,8 +69,6 @@ public final class Autos {
   }
 
   public static Command visionAuto(DriveSubsystem driveSubsystem, VisionSubsystem vision) {
-
-
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
       vision.getPose(),
       List.of(),
