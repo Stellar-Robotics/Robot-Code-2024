@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -68,6 +69,8 @@ public class DriveSubsystem extends SubsystemBase {
   // Target robot angle
   private Rotation2d targetRobotAngle = new Rotation2d(0);
 
+  private final PIDController aimBot = new PIDController(0.0001, 0, 0);
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
   }
@@ -111,12 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
-  public void driveWithAbsoluteAngle(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {
-    double hype = Math.sqrt(Math.pow(angleX, 2) + Math.pow(angleY, 2));
-
-    if (hype > OIConstants.kRotDeadband) {
-      targetRobotAngle = new Rotation2d(Math.atan2(angleY, -angleX)).rotateBy(Rotation2d.fromDegrees((-90)));
-    }
+  public void driveWithAbsoluteAngle(double xSpeed, double ySpeed, Rotation2d angle, boolean fieldRelative, boolean rateLimit) {
 
     double robotAngle = m_gyro.getAngle(IMUAxis.kZ) % 360;
 
@@ -124,22 +122,33 @@ public class DriveSubsystem extends SubsystemBase {
       robotAngle += 360;
     }
 
-    /*
-    if (Math.abs(angleX) + Math.abs(angleY) > 0) {
-      targetRobotAngle = new Rotation2d(Math.atan2(angleY, -angleX)).rotateBy(Rotation2d.fromDegrees((-90)));
-    }
-    */
     // minimum difference between current angle and target angle (allowing signed angle)
     double angleDiff = (targetRobotAngle.getDegrees() - robotAngle + 540) % 360 - 180;
 
-    //System.out.println("robot angle: " + robotAngle + " target angle: " + targetRobotAngle.getDegrees() + "diff: " + angleDiff);
-
-    // P gain for angle control
+    /* - Old Stuff!
+     P gain for angle control
     final double P = 0.01;
 
-    double rotationRate = angleDiff * P;
+    double rotationRate = angleDiff * P; */
+
+    drive(xSpeed, ySpeed, aimBot.calculate(-angleDiff, 0), fieldRelative, rateLimit);
+  }
+
+  public void driveWithAim(double xSpeed, double ySpeed) {
+
 
     drive(xSpeed, ySpeed, rotationRate, fieldRelative, rateLimit);
+  }
+
+  public void driveWithJoystick(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {
+    double hype = Math.sqrt(Math.pow(angleX, 2) + Math.pow(angleY, 2));
+
+    if (hype > OIConstants.kRotDeadband) {
+      targetRobotAngle = new Rotation2d(Math.atan2(angleY, -angleX)).rotateBy(Rotation2d.fromDegrees((-90)));
+    }
+
+    this.driveWithAbsoluteAngle(xSpeed, ySpeed, targetRobotAngle, fieldRelative, rateLimit);
+
   }
 
   /**

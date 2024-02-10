@@ -12,6 +12,7 @@ import frc.robot.commands.Autos;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -50,6 +51,7 @@ public class RobotContainer {
 
     // Configure default commands
     driveSystem.setDefaultCommand(
+      new ConditionalCommand(         
         // The left stick controls translation of the robot.
         // Turning is controlled by the right stick.
         new RunCommand(
@@ -58,8 +60,11 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -driverController.getRightX(),
                 -driverController.getRightY(),
-                true, true),
-            driveSystem));
+                true, true), driveSystem),
+        new RunCommand(() -> driveSystem.driveWithAim(
+                -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+        ), driveSystem), null));
   }
 
   /**
