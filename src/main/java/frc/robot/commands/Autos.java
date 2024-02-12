@@ -68,9 +68,9 @@ public final class Autos {
     );
   }
 
-  public static Command visionAuto(DriveSubsystem driveSubsystem, VisionSubsystem vision) {
+  public static Command visionAuto(DriveSubsystem driveSubsystem) {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-      vision.getPose(),
+      driveSubsystem.getPose(),
       List.of(),
       new Pose2d(2, 0, new Rotation2d(0)),
       getTrajectoryConfig()
@@ -78,7 +78,7 @@ public final class Autos {
 
     return new SwerveControllerCommand(
       trajectory,
-      vision::getPose, // Functional interface to feed supplier
+      driveSubsystem::getPose, // Functional interface to feed supplier
       DriveConstants.kDriveKinematics,
 
       // Position controllers
@@ -86,8 +86,7 @@ public final class Autos {
       new PIDController(AutoConstants.kPYController, 0, 0),
       getThetaController(),
       driveSubsystem::setModuleStates,
-      driveSubsystem,
-      vision
+      driveSubsystem
     );
   }
 

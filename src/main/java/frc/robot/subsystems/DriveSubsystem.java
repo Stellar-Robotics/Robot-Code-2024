@@ -161,7 +161,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveWithAim(double xSpeed, double ySpeed, int aprilTagId, boolean fieldRelative, boolean rateLimit) {
-    drive(xSpeed, ySpeed, aimBot.calculate(vision.getAprilTagX(aprilTagId), 0), fieldRelative, rateLimit);
+    //drive(xSpeed, ySpeed, aimBot.calculate(vision.getAprilTagX(aprilTagId), 0), fieldRelative, rateLimit);
   }
 
   public void driveWithJoystick(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {

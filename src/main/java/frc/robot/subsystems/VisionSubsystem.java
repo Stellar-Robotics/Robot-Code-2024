@@ -80,22 +80,6 @@ public class VisionSubsystem extends SubsystemBase {
     return new Pose2d(poseArray[1], poseArray[0], rot);
   }
 
-  public void updateTrajectory() {
-    TrajectoryConfig config = new TrajectoryConfig(
-      AutoConstants.kMaxSpeedMetersPerSecond,
-      AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-      // Add kinematics to ensure max speed is actually obeyed
-      .setKinematics(DriveConstants.kDriveKinematics
-    );
-
-    this.targetTrajectory = TrajectoryGenerator.generateTrajectory(
-      this.getPose(),
-      List.of(),
-      new Pose2d(2, 0, new Rotation2d(0)),
-      config
-    );
-  }
-
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *
