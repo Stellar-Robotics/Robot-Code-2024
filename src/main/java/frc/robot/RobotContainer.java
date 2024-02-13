@@ -6,11 +6,13 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
+
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
+import frc.robot.StellarController.Button;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,8 +31,7 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem driveSystem = new DriveSubsystem(new Pose2d(6, 6, new Rotation2d(-1)));
   // The driver's controller
-  XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
-  XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+  StellarController driverController = new StellarController(OIConstants.kDriverControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -55,20 +56,20 @@ public class RobotContainer {
         // The left stick controls translation of the robot.
         // Turning is controlled by the right stick.
         new RunCommand(
-          () -> driveSystem.driveWithJoystick(
-            -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-            -driverController.getRightX(),
-            -driverController.getRightY(),
-            true, true), driveSystem
-        ),
+            () -> driveSystem.driveWithAbsoluteAngle(
+                -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+                driverController.getRightRotary(),
+                true, true),
+            driveSystem),
+
         new RunCommand(
           () -> driveSystem.driveWithAim(
             -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
             1, // what AprilTag to target???
-            true, true
-            ), driveSystem
+            true, true), 
+            driveSystem
         ),
         driverController::getAButton
       )
@@ -103,12 +104,12 @@ public class RobotContainer {
    * created by
    * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
    * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
+   * edu.wpi.first.wpilibj.Joystick} or {@link StellarController}), and then calling
    * passing it to a
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(driverController, Button.kR1.value)
+    new JoystickButton(driverController, Button.kA.value)
         .whileTrue(new RunCommand(
             () -> driveSystem.setX(),
             driveSystem));
