@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -239,8 +240,8 @@ public class StellarController extends GenericHID {
    *
    * @return The angle in degrees.
    */
-  public double getLeftRotary() {
-    return -(getRawAxis(Axis.kLeftRotary.value) * 180 + 180);
+  public Rotation2d getLeftRotary() {
+    return Rotation2d.fromDegrees(-(getRawAxis(Axis.kLeftRotary.value) * 180 + 180));
   }
 
   /**
@@ -248,8 +249,8 @@ public class StellarController extends GenericHID {
    *
    * @return The angle in degrees.
    */
-  public double getRightRotary() {
-    return (getRawAxis(Axis.kRightRotary.value) + 1) * 180;
+  public Rotation2d getRightRotary() {
+    return Rotation2d.fromDegrees((getRawAxis(Axis.kRightRotary.value) + 1) * 180);
   }
 
   /**
