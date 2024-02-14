@@ -55,25 +55,26 @@ public class RobotContainer {
     // Configure the drive command - if the A button is pressed aim at an AprilTag,
     // otherwise respond to driver inputs to control angle.
     driveSystem.setDefaultCommand(
-      new ConditionalCommand(         
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the right stick.
-        new RunCommand(
-            () -> driveSystem.driveWithAbsoluteAngle(
-                -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-                driverController.getRightRotary(),
-                true, true),
-            driveSystem),
-
+      new ConditionalCommand(
         new RunCommand(
           () -> driveSystem.driveWithAim(
             -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+            MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
             1, // what AprilTag to target???
             true, true), 
             driveSystem
         ),
+        // The left stick controls translation of the robot.
+        // Turning is controlled by the right stick.
+        new RunCommand(
+            () -> driveSystem.driveWithAbsoluteAngle(
+                -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+                driverController.getRightRotary(),
+                true, true),
+            driveSystem),
+
+        
         driverController::getAButton
       )
     );

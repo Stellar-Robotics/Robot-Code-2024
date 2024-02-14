@@ -9,11 +9,14 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.WPIUtilJNI;
@@ -46,6 +49,8 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
+  private final Translation2d robotCenterOffset = new Translation2d(0, 0.07);
+
   // The gyro sensor
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
@@ -66,15 +71,40 @@ public class DriveSubsystem extends SubsystemBase {
   // Target robot angle
   private Rotation2d targetRobotAngle = new Rotation2d(0);
 
-  private final PIDController manualAnglePID = new PIDController(0.0001, 0, 0);
+  private final PIDController manualAnglePID = new PIDController(0.01, 0, 0);
   private final PIDController aimBot = new PIDController(0.0001, 0, 0);
 
-  DoubleArrayPublisher odometryPosePub;
+  DoubleArrayPublisher odometryPosePub; 
+  
+  NetworkTableInstance nt;
+  NetworkTable table;
+
+  DoubleSubscriber pSub;
+  DoubleSubscriber iSub;
+  DoubleSubscriber dSub;
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(Pose2d initialPoseMeters) {
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+
+    nt = NetworkTableInstance.getDefault();
+    table = nt.getTable("SmartDashboard");
+
+    nt.startClient4("robot");
+    nt.setServer("localhost"); // where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
+
+    pSub = table.getDoubleTopic("p").subscribe(0.0);
+    iSub = table.getDoubleTopic("i").subscribe(0.0);
+    dSub = table.getDoubleTopic("d").subscribe(0.0);
+
+    table.getDoubleTopic("p").publish().set(0.001);
+    table.getDoubleTopic("i").publish().set(0.001);
+    table.getDoubleTopic("d").publish().set(0.001);
+
     odometryPosePub = table.getDoubleArrayTopic("odometryRobotPose").publish();
+
+
+
+    manualAnglePID.enableContinuousInput(0, 360);
 
     m_odometry = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
@@ -111,6 +141,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     Pose2d pose = m_odometry.getEstimatedPosition();
     odometryPosePub.set(new double[] {pose.getTranslation().getX(), pose.getTranslation().getY(), pose.getRotation().getRadians()});
+
+    //manualAnglePID.setP(pSub.get());
+    //manualAnglePID.setI(iSub.get());
+    //manualAnglePID.setD(dSub.get());
   }
 
   /**
@@ -141,7 +175,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveWithAbsoluteAngle(double xSpeed, double ySpeed, Rotation2d angle, boolean fieldRelative, boolean rateLimit) {
-
+    System.out.println(xSpeed+" "+ySpeed+" "+angle.getDegrees());
     double robotAngle = m_gyro.getAngle(IMUAxis.kZ) % 360;
 
     if (robotAngle < 0) {
@@ -149,7 +183,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     // minimum difference between current angle and target angle (allowing signed angle)
-    double angleDiff = (targetRobotAngle.getDegrees() - robotAngle + 540) % 360 - 180;
+    //double angleDiff = (targetRobotAngle.getDegrees() - robotAngle + 540) % 360 - 180;
 
     /* - Old Stuff!
      P gain for angle control
@@ -157,11 +191,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     double rotationRate = angleDiff * P; */
 
-    drive(xSpeed, ySpeed, manualAnglePID.calculate(-angleDiff, 0), fieldRelative, rateLimit);
+    drive(xSpeed, ySpeed, manualAnglePID.calculate(robotAngle, angle.getDegrees()), fieldRelative, rateLimit);
   }
 
   public void driveWithAim(double xSpeed, double ySpeed, int aprilTagId, boolean fieldRelative, boolean rateLimit) {
     //drive(xSpeed, ySpeed, aimBot.calculate(vision.getAprilTagX(aprilTagId), 0), fieldRelative, rateLimit);
+    int x = 1/0;
   }
 
   public void driveWithJoystick(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {
@@ -186,7 +221,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    
+    System.out.println(rot);
     double xSpeedCommanded;
     double ySpeedCommanded;
 
@@ -246,7 +281,8 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)))
-            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered),
+        robotCenterOffset);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);

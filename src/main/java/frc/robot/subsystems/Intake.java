@@ -25,7 +25,9 @@ public class Intake {
 
         // Reset motor controllers to factory settings
         intakeDrive.restoreFactoryDefaults();
-        intakeAngle.restoreFactoryDefaults();
+
+        // Were disabling the factory reset so we dont lose out absolute encoder software offeset.
+        //intakeAngle.restoreFactoryDefaults();
 
         // Set current limits
         intakeDrive.setSmartCurrentLimit(30, 30);

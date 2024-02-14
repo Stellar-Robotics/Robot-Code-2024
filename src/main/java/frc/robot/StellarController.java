@@ -250,7 +250,7 @@ public class StellarController extends GenericHID {
    * @return The angle in degrees.
    */
   public Rotation2d getRightRotary() {
-    return Rotation2d.fromDegrees((getRawAxis(Axis.kRightRotary.value) + 1) * 180);
+    return Rotation2d.fromDegrees(360 - (getRawAxis(Axis.kRightRotary.value) + 1) * 180);
   }
 
   /**

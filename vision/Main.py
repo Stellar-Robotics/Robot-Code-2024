@@ -7,7 +7,6 @@ from wpimath.geometry import *
 def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose : Transform3d, tagId : int):
     # closest thing to assumed odometry coordinate system is EDN, so we'll convert the absolute pose to that
     absoluteTagPose = CoordinateSystem.convert(fieldLayout.getTagPose(tagId),CoordinateSystem.NWU(),CoordinateSystem.EDN())
-    
     return absoluteTagPose.transformBy(tagPose.inverse())
     
     #absRobotW = absoluteTagPose.Y() - tagPose.Y()
