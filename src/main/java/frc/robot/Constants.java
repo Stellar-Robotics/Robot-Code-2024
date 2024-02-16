@@ -148,13 +148,13 @@ public final class Constants {
     public static final int intakeAngleControllerId = 54;
 
     // PID values for the intake angle
-    public static final double intakeAngleP = 0.0001;
+    public static final double intakeAngleP = 1.2;
     public static final double intakeAngleI = 0;
     public static final double intakeAngleD = 0;
 
     // Min and Max rotational angles
-    public static final double intakeMaxAngle = 90;
-    public static final double intakeMinAngle = 0;
+    public static final double intakeMaxAngle = 5;
+    public static final double intakeMinAngle = 0.05;
   }
 
   public static class ShooterConstants {
@@ -164,7 +164,7 @@ public final class Constants {
     public static final int shooterAngleControllerID = 12;
 
     // PID values for the shooter angle
-    public static final double shooterAngleP = 0.0001;
+    public static final double shooterAngleP = 0.01;
     public static final double shooterAngleI = 0;
     public static final double shooterAngleD = 0;
 

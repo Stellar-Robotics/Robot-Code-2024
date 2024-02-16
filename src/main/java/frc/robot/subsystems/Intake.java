@@ -1,17 +1,24 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ModuleConstants;
+
+import com.revrobotics.CANSparkBase;
 
 public class Intake {
 
     // Declare Motors, encoders, and Position Controllers
     private final CANSparkMax intakeDrive;
     private final CANSparkMax intakeAngle;
-    private final RelativeEncoder intakeAngleEncoder;
+    private final AbsoluteEncoder intakeAngleEncoder;
 
     // Using SparkPIDController instead of a generic one in order
     // to execute PID operatons on the angle motor controller.
@@ -34,21 +41,29 @@ public class Intake {
         intakeAngle.setSmartCurrentLimit(30, 30);
 
         // Grab the encoders of the motors
-        intakeAngleEncoder = intakeAngle.getEncoder();
-
-        this.resetAngleEncoder();
-
-        // Flash motor configuration to the controllers
-        intakeDrive.burnFlash();
-        intakeAngle.burnFlash();
+        intakeAngleEncoder = intakeAngle.getAbsoluteEncoder(Type.kDutyCycle);
 
         // Define Position Controller for the Angle Motor
         angleController = intakeAngle.getPIDController();
+        angleController.setFeedbackDevice(intakeAngleEncoder);
 
         // Setting intial PID Values for the Angle
         angleController.setP(IntakeConstants.intakeAngleP);
         angleController.setI(IntakeConstants.intakeAngleI);
         angleController.setD(IntakeConstants.intakeAngleD);
+        angleController.setFF(0);
+        angleController.setOutputRange(-1, 1);
+
+        angleController.setPositionPIDWrappingEnabled(true);
+        angleController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
+        angleController.setPositionPIDWrappingMaxInput(1);
+
+        // Flash motor configuration to the controllers
+        intakeDrive.burnFlash();
+        intakeAngle.burnFlash();
+
+        angleController.setReference(0.05, CANSparkMax.ControlType.kPosition);
+        
 
     }
 
@@ -67,22 +82,14 @@ public class Intake {
         return intakeDrive.get();
     }
 
-    // Angle Encoder operations
-    public void resetAngleEncoder() {
-        intakeAngleEncoder.setPosition(0);
-    }
-
-    public void setAngleEncoder(double position) {
-        intakeAngleEncoder.setPosition(position);
-    }
-
+    // Angle Encoder operation
     public double getAngleEncoderPos() {
         return intakeAngleEncoder.getPosition();
     }
 
     // Angle Controller Setters
     public void setTargetAngle(double angleDegrees) {
-        angleController.setReference(angleDegrees / 360, CANSparkMax.ControlType.kPosition);
+        angleController.setReference(Math.min(Math.max(angleDegrees, IntakeConstants.intakeMinAngle), IntakeConstants.intakeMaxAngle), CANSparkMax.ControlType.kPosition);
     }
      
 }

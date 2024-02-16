@@ -18,7 +18,9 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -45,11 +47,53 @@ public class RobotContainer {
 
     // Control intake using right trigger - left trigger
     // Control shooter using left stick y
+
+    /*mechSystem.setDefaultCommand(new ParallelCommandGroup(new RunCommand(
+      () -> {
+      //mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
+      //mechSystem.setIntakeAngle(operatorController.getLeftY() > 0.5 ? 0.35 : 0.05);
+      //mechSystem.setIntakeAngle(operatorController.getPOV(0) - operatorController.getPOV(180));
+
+      if (operatorController.getPOV(0) > 0) {
+        mechSystem.setIntakeAngle(0.05);
+      } else if (operatorController.getPOV(180) > 0) {
+        mechSystem.setIntakeAngle(0.35);
+      }
+
+      //mechSystem.setIntakePower(MathUtil.applyDeadband(-operatorController.getLeftTriggerAxis() + operatorController.getRightTriggerAxis(), 0.10));
+      //mechSystem.setShooterPower(MathUtil.applyDeadband(operatorController.getLeftY(), 0.20));
+    }, mechSystem
+    ), new RunCommand(
+      () -> {
+
+      if (operatorController.getLeftY() >= 0.5) {
+        mechSystem.setIntakePower(1);
+      } else if (operatorController.getLeftY() <= -0.5) {
+        mechSystem.setIntakePower(0.5);
+      }
+
+    }, mechSystem
+    )));*/
     
     mechSystem.setDefaultCommand(new RunCommand(() -> {
       //mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
+      mechSystem.setIntakeAngle(operatorController.getLeftY() > 0.5 ? 0.35 : 0.05);
+      //mechSystem.setIntakeAngle(operatorController.getPOV(0) - operatorController.getPOV(180));
+
+      /*if (operatorController.getPOV(0) > 0) {
+        mechSystem.setIntakeAngle(0.05);
+      } else if (operatorController.getPOV(180) > 0) {
+        mechSystem.setIntakeAngle(0.35);
+      }
+
+      if (operatorController.getLeftY() >= 0.5) {
+        mechSystem.setIntakePower(1);
+      } else if (operatorController.getLeftY() <= -0.5) {
+        mechSystem.setIntakePower(0.5);
+      }*/
+
       mechSystem.setIntakePower(MathUtil.applyDeadband(-operatorController.getLeftTriggerAxis() + operatorController.getRightTriggerAxis(), 0.10));
-      mechSystem.setShooterPower(MathUtil.applyDeadband(operatorController.getLeftY(), 0.20));
+      //mechSystem.setShooterPower(MathUtil.applyDeadband(operatorController.getLeftY(), 0.20));
     }, mechSystem));
 
     // Configure the drive command - if the A button is pressed aim at an AprilTag,
