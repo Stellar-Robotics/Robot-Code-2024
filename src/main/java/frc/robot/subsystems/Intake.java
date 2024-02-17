@@ -24,7 +24,11 @@ public class Intake {
     // to execute PID operatons on the angle motor controller.
     private final SparkPIDController angleController;
 
+    boolean isExtended;
+
     public Intake() { // Constructor Function
+
+        isExtended = false;
 
         // Define Spark Motors
         intakeDrive = new CANSparkMax(IntakeConstants.intakeDriveControllerId, MotorType.kBrushless);
@@ -90,6 +94,17 @@ public class Intake {
     // Angle Controller Setters
     public void setTargetAngle(double angleDegrees) {
         angleController.setReference(Math.min(Math.max(angleDegrees, IntakeConstants.intakeMinAngle), IntakeConstants.intakeMaxAngle), CANSparkMax.ControlType.kPosition);
+    }
+
+    // Switch the state up and down
+    public void toggleState() {
+        if (isExtended) {
+            this.setTargetAngle(0.35);
+        } else {
+            this.setTargetAngle(0.05);
+        }
+        // Update our extension status
+        isExtended = !isExtended;
     }
      
 }

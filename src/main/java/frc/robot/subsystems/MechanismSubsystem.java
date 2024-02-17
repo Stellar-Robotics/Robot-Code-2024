@@ -46,6 +46,10 @@ public class MechanismSubsystem extends SubsystemBase {
     shooter.setTargetAngle(angle);
   }
 
+  public void toggleIntakeState() {
+    intake.toggleState();
+  }
+
   // Shooter Getters
 
 }

@@ -77,22 +77,22 @@ public class RobotContainer {
     
     mechSystem.setDefaultCommand(new RunCommand(() -> {
       //mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
-      mechSystem.setIntakeAngle(operatorController.getLeftY() > 0.5 ? 0.35 : 0.05);
+      //mechSystem.setIntakeAngle(operatorController.getLeftY() > 0.5 ? 0.35 : 0.05);
       //mechSystem.setIntakeAngle(operatorController.getPOV(0) - operatorController.getPOV(180));
 
-      /*if (operatorController.getPOV(0) > 0) {
-        mechSystem.setIntakeAngle(0.05);
-      } else if (operatorController.getPOV(180) > 0) {
-        mechSystem.setIntakeAngle(0.35);
+      if (operatorController.getAButtonPressed()) {
+        mechSystem.toggleIntakeState();
       }
 
-      if (operatorController.getLeftY() >= 0.5) {
-        mechSystem.setIntakePower(1);
-      } else if (operatorController.getLeftY() <= -0.5) {
+      if (operatorController.getLeftBumper()) {
+        mechSystem.setIntakePower(-1);
+      } else if (operatorController.getRightBumper()) {
         mechSystem.setIntakePower(0.5);
-      }*/
+      } else {
+        mechSystem.setIntakePower(0);
+      }
 
-      mechSystem.setIntakePower(MathUtil.applyDeadband(-operatorController.getLeftTriggerAxis() + operatorController.getRightTriggerAxis(), 0.10));
+      //mechSystem.setIntakePower(MathUtil.applyDeadband(-operatorController.getLeftTriggerAxis() + operatorController.getRightTriggerAxis(), 0.10));
       //mechSystem.setShooterPower(MathUtil.applyDeadband(operatorController.getLeftY(), 0.20));
     }, mechSystem));
 
