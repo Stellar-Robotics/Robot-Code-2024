@@ -172,4 +172,13 @@ public final class Constants {
     public static final double shooterMaxAngle = 90;
     public static final double shooterMinAngle = 0;
   }
+
+  public static class ClimberConstants {
+    // Climber motor can ID's
+    public static final int climberLeftCANID = 39;
+    public static final int climberRightCANID = 40;
+
+    public static final double maxEncoderTicks = 2000;
+    public static final double maxEncoderTicksNegative = -2000;
+  }
 }

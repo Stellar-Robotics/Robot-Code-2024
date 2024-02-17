@@ -92,6 +92,16 @@ public class RobotContainer {
         mechSystem.setIntakePower(0);
       }
 
+      if (operatorController.getLeftY() < -0.2) {
+        mechSystem.setLeftClimberpower(operatorController.getLeftY());
+      }
+
+      if (operatorController.getRightY() < -0.2) {
+        mechSystem.setRightClimberPower(operatorController.getRightY());
+      }
+
+      
+
       //mechSystem.setIntakePower(MathUtil.applyDeadband(-operatorController.getLeftTriggerAxis() + operatorController.getRightTriggerAxis(), 0.10));
       //mechSystem.setShooterPower(MathUtil.applyDeadband(operatorController.getLeftY(), 0.20));
     }, mechSystem));

@@ -12,6 +12,7 @@ public class MechanismSubsystem extends SubsystemBase {
   // Define Mechanisms
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
+  private final Climber climber = new Climber();
 
   /** Creates a new MechanismSubsystem. */
   public MechanismSubsystem() {}
@@ -23,6 +24,9 @@ public class MechanismSubsystem extends SubsystemBase {
     // DELETE THIS AFTER DEBUGGING!
     SmartDashboard.putNumber("IntakeAngle", intake.getAngleEncoderPos());
     SmartDashboard.putNumber("ShooterAngle", shooter.getAngleEncoderPos());
+
+    SmartDashboard.putNumber("ClimberLeftPosition", climber.getEncoderValues()[0]);
+    SmartDashboard.putNumber("ClimberRightPosition", climber.getEncoderValues()[1]);
   }
 
 
@@ -48,6 +52,22 @@ public class MechanismSubsystem extends SubsystemBase {
 
   public void toggleIntakeState() {
     intake.toggleState();
+  }
+
+  public void setRawClimberPower(double powerLeft, double powerRight) {
+    climber.setIndividualRawPower(powerLeft, powerRight);
+  }
+
+  public void setLeftClimberpower(double power) {
+    climber.setClimberLeftPower(power);
+  }
+
+  public void setRightClimberPower(double power) {
+    climber.setClimberRightPower(power);
+  }
+
+  public double[] getClimberEncoderPositions() {
+    return climber.getEncoderValues();
   }
 
   // Shooter Getters
