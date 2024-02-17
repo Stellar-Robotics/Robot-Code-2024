@@ -397,6 +397,11 @@ public class StellarController extends GenericHID {
     return getRawButtonReleased(Button.kY.value);
   }
 
+    
+  public boolean getRightCenterButton() {
+    return getRawButton(Button.kRightBumper.value);
+  }
+
   /**
    * Constructs an event instance around the Y button's digital signal.
    *

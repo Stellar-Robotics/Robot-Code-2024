@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.utils.SwerveUtils;
@@ -72,7 +73,7 @@ public class DriveSubsystem extends SubsystemBase {
   private Rotation2d targetRobotAngle = new Rotation2d(0);
 
   private final PIDController manualAnglePID = new PIDController(0.01, 0, 0);
-  private final PIDController aimBot = new PIDController(0.0001, 0, 0);
+  private final PIDController aimBot = new PIDController(0.002, 0, 0);
 
   DoubleArrayPublisher odometryPosePub; 
   
@@ -195,8 +196,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveWithAim(double xSpeed, double ySpeed, int aprilTagId, boolean fieldRelative, boolean rateLimit) {
-    //drive(xSpeed, ySpeed, aimBot.calculate(vision.getAprilTagX(aprilTagId), 0), fieldRelative, rateLimit);
-    int x = 1/0;
+    drive(xSpeed, ySpeed, aimBot.calculate(vision.getAprilTagX(aprilTagId), 300), fieldRelative, rateLimit);
+    //SmartDashboard.putBoolean("AimBot-Enabled", true);
+    //System.out.println("I AM ACTIVATED!");
   }
 
   public void driveWithJoystick(double xSpeed, double ySpeed, double angleX, double angleY, boolean fieldRelative, boolean rateLimit) {

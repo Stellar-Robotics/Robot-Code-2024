@@ -28,6 +28,8 @@ def main():
    xTopic = smartDashboard.getDoubleTopic("x").publish()
    zTopic = smartDashboard.getDoubleTopic("z").publish()
    rotTopic = smartDashboard.getDoubleTopic("rot").publish()
+   frameXTopic = smartDashboard.getDoubleTopic("frameX").publish()
+   frameZTopic = smartDashboard.getDoubleTopic("frameZ").publish()
 
    absolutePoseTopic = smartDashboard.getDoubleArrayTopic("robotPose").publish()
    
@@ -60,11 +62,12 @@ def main():
       tags = detector.detect(gray)
       
       #
-      tagToFollow = next(filter(lambda x: x.getId() == 16, tags), None)
+      tagToFollow = next(filter(lambda x: x.getId() == 8, tags), None)
 
       # If the tag wasn't found, skip the rest of the loop
       if tagToFollow is None:
          absolutePoseTopic.set(np.array([]))
+         frameXTopic.set(300)
          continue
       
       
@@ -79,10 +82,13 @@ def main():
 
       robotPoseArray = np.array([robotX,robotZ,robotRotation])
 
-      xTopic.set(x)
-      zTopic.set(z)
-      rotTopic.set(rotation)
-      absolutePoseTopic.set(robotPoseArray)
+      #xTopic.set(x)
+      #zTopic.set(z)
+      #rotTopic.set(rotation)
+      #absolutePoseTopic.set(robotPoseArray)
+
+      frameXTopic.set(tagToFollow.getCenter().x)
+      frameZTopic.set(pose.z)
 
       #print(f"{x}, {y}, {z}, {rotation}")
       print(f"Robot Coordinates (EUN): {robotX}, {robotY}, {robotZ}, {rotation} - Tag pose (EDN?): {x}, {y}, {z}")

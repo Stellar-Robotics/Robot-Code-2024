@@ -30,6 +30,9 @@ public class VisionSubsystem extends SubsystemBase {
   DoubleSubscriber rotSub;
   DoubleArraySubscriber absPoseSub;
 
+  DoubleSubscriber frameX;
+  DoubleSubscriber frameZ;
+
   public Trajectory targetTrajectory;
 
   public VisionSubsystem() {
@@ -40,6 +43,9 @@ public class VisionSubsystem extends SubsystemBase {
         zSub = table.getDoubleTopic("z").subscribe(0.0);
         rotSub = table.getDoubleTopic("rot").subscribe(0.0);
         absPoseSub = table.getDoubleArrayTopic("robotPose").subscribe(new double[0]);
+
+        frameX = table.getDoubleTopic("frameX").subscribe(0);
+        frameZ = table.getDoubleTopic("frameZ").subscribe(0);
 
         nt.startClient4("robot");
         nt.setServer("localhost"); // where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
@@ -60,8 +66,13 @@ public class VisionSubsystem extends SubsystemBase {
         });
   }
 
-  public double getAprilTagX(int tagId) throws Exception {
-    throw new Exception("Add logic for this method to return the x position of the AprilTag *in the camera frame*!");
+  public double getAprilTagX(int tagId) {
+    //throw new Exception("Add logic for this method to return the x position of the AprilTag *in the camera frame*!");
+    return frameX.get();
+  }
+
+  public double getAprilTagZ(int tagId) {
+    return frameZ.get();
   }
 
 
