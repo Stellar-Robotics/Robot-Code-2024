@@ -29,8 +29,8 @@ public class Climber {
         climberLeft.restoreFactoryDefaults();
         climberRight.restoreFactoryDefaults();
 
-        climberLeft.setIdleMode(IdleMode.kCoast);
-        climberRight.setIdleMode(IdleMode.kCoast);
+        climberLeft.setIdleMode(IdleMode.kBrake);
+        climberRight.setIdleMode(IdleMode.kBrake);
 
     }
 

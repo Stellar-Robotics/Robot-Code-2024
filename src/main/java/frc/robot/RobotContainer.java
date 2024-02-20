@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import org.opencv.core.Mat.Tuple2;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 
 import frc.robot.Constants.AutoConstants;
@@ -23,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.PS4Controller;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -37,6 +41,8 @@ public class RobotContainer {
   // The driver's controller
   StellarController driverController = new StellarController(OIConstants.kDriverControllerPort);
   XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
+  //PS4Controller altDriveController = new PS4Controller(3);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -74,12 +80,19 @@ public class RobotContainer {
 
     }, mechSystem
     )));*/
+
+    /*private Tuple2 calc2DDeadband(double valX, double valY, double valDB) {
+      private final Tuple2 myVec = new Tuple2<T>(valX, valY);
+      return myVec;
+    }*/
     
     mechSystem.setDefaultCommand(new RunCommand(() -> {
       //mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
       //mechSystem.setIntakeAngle(operatorController.getLeftY() > 0.5 ? 0.35 : 0.05);
       //mechSystem.setIntakeAngle(operatorController.getPOV(0) - operatorController.getPOV(180));
 
+
+      // Intake Controls
       if (operatorController.getAButtonPressed()) {
         mechSystem.toggleIntakeState();
       }
@@ -87,17 +100,27 @@ public class RobotContainer {
       if (operatorController.getLeftBumper()) {
         mechSystem.setIntakePower(-1);
       } else if (operatorController.getRightBumper()) {
-        mechSystem.setIntakePower(0.5);
+        mechSystem.setIntakePower(1);
       } else {
         mechSystem.setIntakePower(0);
       }
 
-      if (operatorController.getLeftY() < -0.2) {
+
+      // Set Climber Values
+      if (operatorController.getLeftY() < -0.5) {
         mechSystem.setLeftClimberpower(operatorController.getLeftY());
+      } else if (operatorController.getLeftY() > 0.5) {
+        mechSystem.setLeftClimberpower(operatorController.getLeftY());
+      } else {
+        mechSystem.setLeftClimberpower(0);
       }
 
-      if (operatorController.getRightY() < -0.2) {
+      if (operatorController.getRightY() < -0.5) {
         mechSystem.setRightClimberPower(operatorController.getRightY());
+      } else if (operatorController.getRightY() > 0.5) {
+        mechSystem.setRightClimberPower(operatorController.getRightY());
+      } else {
+        mechSystem.setRightClimberPower(0);
       }
 
       
@@ -111,19 +134,36 @@ public class RobotContainer {
     driveSystem.setDefaultCommand(
       new RunCommand(() -> {
 
+        // Primairy Stellar Controller
         if (driverController.getRightCenterButton()) {
           driveSystem.driveWithAim(
-            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+            /*-MathUtil.applyDeadband(*/-driverController.getLeftX()/*, OIConstants.kDriveDeadband)*/,
+            /*-MathUtil.applyDeadband(*/-driverController.getLeftY()/*, OIConstants.kDriveDeadband)*/,
             1, // what AprilTag to target???
             true, true);
         } else {
           driveSystem.driveWithAbsoluteAngle(
-            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+            /*-MathUtil.applyDeadband(*/-driverController.getLeftX()/*, OIConstants.kDriveDeadband)*/,
+            /*-MathUtil.applyDeadband(*/-driverController.getLeftY()/*, OIConstants.kDriveDeadband)*/,
             driverController.getRightRotary(),
             true, true);
         }
+
+        // Basic Alt Controller
+        /*if (altDriveController.getL1Button()) {
+          driveSystem.driveWithAim(
+            -MathUtil.applyDeadband(altDriveController.getLeftX(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(altDriveController.getLeftY(), OIConstants.kDriveDeadband),
+            1, // what AprilTag to target???
+            true, true);
+        } else {
+          driveSystem.driveWithJoystick(
+            -MathUtil.applyDeadband(altDriveController.getLeftX(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(altDriveController.getLeftY(), OIConstants.kDriveDeadband),
+            altDriveController.getRightX(), altDriveController.getRightY(),
+            true, true);
+        }*/
+
 
       }, driveSystem)
       /*new ConditionalCommand(
