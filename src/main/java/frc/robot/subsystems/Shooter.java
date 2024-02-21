@@ -45,6 +45,8 @@ public class Shooter {
         shooterAnglePIDController.setI(ShooterConstants.shooterAngleI);
         shooterAnglePIDController.setD(ShooterConstants.shooterAngleD);
 
+        // Set PID Feedback Device
+        shooterAnglePIDController.setFeedbackDevice(shooterAngleEncoder);
 
         // Flash motor configuration to the controllers
         shooterDriveController1.burnFlash();
@@ -83,8 +85,8 @@ public class Shooter {
     }
 
     // Angle Controller Setters
-    public void setTargetAngle(double angleDegrees) {
-        shooterAnglePIDController.setReference(angleDegrees / 360, CANSparkMax.ControlType.kPosition);
+    public void setTargetAngle(double angleRotations) {
+        shooterAnglePIDController.setReference(Math.min(Math.max(ShooterConstants.shooterMinAngle, angleRotations), ShooterConstants.shooterMaxAngle), CANSparkMax.ControlType.kPosition);
     }
      
 }

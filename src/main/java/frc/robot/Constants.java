@@ -164,12 +164,12 @@ public final class Constants {
     public static final int shooterAngleControllerID = 12;
 
     // PID values for the shooter angle
-    public static final double shooterAngleP = 0.01;
+    public static final double shooterAngleP = 0.02;
     public static final double shooterAngleI = 0;
     public static final double shooterAngleD = 0;
 
-    // Min and Max rotational angle
-    public static final double shooterMaxAngle = 90;
+    // Min and Max rotational angle in encoder ticks
+    public static final double shooterMaxAngle = 200;
     public static final double shooterMinAngle = 0;
   }
 

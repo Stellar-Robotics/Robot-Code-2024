@@ -46,8 +46,8 @@ public class MechanismSubsystem extends SubsystemBase {
     shooter.setDriveSpeed(shooterSpeed);
   }
 
-  public void setShooterAngle(double angle) {
-    shooter.setTargetAngle(angle);
+  public void setShooterAngle(double angleRotations) {
+    shooter.setTargetAngle(angleRotations);
   }
 
   public void toggleIntakeState() {
