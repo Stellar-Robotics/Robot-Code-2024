@@ -12,7 +12,7 @@ public class MechanismSubsystem extends SubsystemBase {
   // Define Mechanisms
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
-  private final Climber climber = new Climber();
+  public final Climber climber = new Climber();
 
   /** Creates a new MechanismSubsystem. */
   public MechanismSubsystem() {}
@@ -43,7 +43,23 @@ public class MechanismSubsystem extends SubsystemBase {
 
   // Shooter Setters
   public void setShooterPower(double shooterSpeed) {
-    shooter.setDriveSpeed(shooterSpeed);
+    shooter.setDrivePower(shooterSpeed);
+  }
+
+  public void setShooterSpeed(double speedRPMs) {
+    shooter.setDriveSpeed(speedRPMs);
+  }
+
+  public void incramentShooter(double speedRPMsPerSecond) {
+    shooter.incramentDriveSpeed(speedRPMsPerSecond);
+  }
+
+  public void incramentShooterAngle(double rotations) {
+    shooter.incramentAngle(rotations);
+  }
+
+  public void stopShooter() {
+    shooter.resetDriveSpeed();
   }
 
   public void setShooterAngle(double angleRotations) {
@@ -52,18 +68,6 @@ public class MechanismSubsystem extends SubsystemBase {
 
   public void toggleIntakeState() {
     intake.toggleState();
-  }
-
-  public void setRawClimberPower(double powerLeft, double powerRight) {
-    climber.setIndividualRawPower(powerLeft, powerRight);
-  }
-
-  public void setLeftClimberpower(double power) {
-    climber.setClimberLeftPower(power);
-  }
-
-  public void setRightClimberPower(double power) {
-    climber.setClimberRightPower(power);
   }
 
   public double[] getClimberEncoderPositions() {

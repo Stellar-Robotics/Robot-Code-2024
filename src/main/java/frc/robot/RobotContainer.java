@@ -4,14 +4,9 @@
 
 package frc.robot;
 
-import org.opencv.core.Mat.Tuple2;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.StellarController.Button;
@@ -20,13 +15,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.PS4Controller;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -87,16 +78,13 @@ public class RobotContainer {
     }*/
     
     mechSystem.setDefaultCommand(new RunCommand(() -> {
-      //mechSystem.setShooterPower(driverController.getAButton()? 1 : 0);
-      //mechSystem.setIntakeAngle(operatorController.getLeftY() > 0.5 ? 0.35 : 0.05);
-      //mechSystem.setIntakeAngle(operatorController.getPOV(0) - operatorController.getPOV(180));
 
-
-      // Intake Controls
+      // Intake Pitch Controls
       if (operatorController.getAButtonPressed()) {
         mechSystem.toggleIntakeState();
       }
 
+      // Intake Speed Controls
       if (operatorController.getLeftBumper()) {
         mechSystem.setIntakePower(-1);
       } else if (operatorController.getRightBumper()) {
@@ -107,21 +95,46 @@ public class RobotContainer {
 
 
       // Set Climber Values
-      if (operatorController.getLeftY() < -0.5) {
-        mechSystem.setLeftClimberpower(operatorController.getLeftY());
-      } else if (operatorController.getLeftY() > 0.5) {
-        mechSystem.setLeftClimberpower(operatorController.getLeftY());
+      mechSystem.climber.incramentPosition(MathUtil.applyDeadband(operatorController.getLeftY(), 0.3));
+
+
+      // Shooter Speed Controls
+      if (operatorController.getXButton()) {
+        if (operatorController.getPOV(0) > 0) {
+          mechSystem.incramentShooter(10);
+        } else if (operatorController.getPOV(180) < 0) {
+          mechSystem.incramentShooter(-10);
+        }
       } else {
-        mechSystem.setLeftClimberpower(0);
+        mechSystem.stopShooter();
       }
 
-      if (operatorController.getRightY() < -0.5) {
-        mechSystem.setRightClimberPower(operatorController.getRightY());
-      } else if (operatorController.getRightY() > 0.5) {
-        mechSystem.setRightClimberPower(operatorController.getRightY());
-      } else {
-        mechSystem.setRightClimberPower(0);
+      // Shooter angle controls
+      if (!operatorController.getXButton() && operatorController.getYButton()) {
+        if (operatorController.getPOV(0) > 0) {
+          mechSystem.incramentShooterAngle(0.2);
+        } else if (operatorController.getPOV(180) < 0) {
+          mechSystem.incramentShooterAngle(-0.2);
+        }
       }
+
+      // Debugging Code
+      /*if (operatorController.getBButton()) {
+        if (operatorController.getRightY() < -0.3) {
+          mechSystem.climber.setClimberLeftPower(-0.2);
+        } else if (operatorController.getRightY() > 0.3) {
+          mechSystem.climber.setClimberLeftPower(0.2);
+        }
+      } else if (operatorController.getYButton()) {
+        if (operatorController.getRightY() < -0.3) {
+          mechSystem.climber.setClimberRightPower(-0.2);
+        } else if (operatorController.getRightY() > 0.3) {
+          mechSystem.climber.setClimberRightPower(0.2);
+        } else {
+          mechSystem.climber.setClimberLeftPower(0);
+          mechSystem.climber.setClimberRightPower(0);
+        }
+      }*/
 
       
 

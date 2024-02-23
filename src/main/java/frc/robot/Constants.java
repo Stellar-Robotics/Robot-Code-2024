@@ -168,6 +168,11 @@ public final class Constants {
     public static final double shooterAngleI = 0;
     public static final double shooterAngleD = 0;
 
+    // PID values for the shooter drive motor (velocity control)
+    public static final double shooterDriveP = 0.02;
+    public static final double shooterDriveI = 0;
+    public static final double shooterDriveD = 0;
+
     // Min and Max rotational angle in encoder ticks
     public static final double shooterMaxAngle = 200;
     public static final double shooterMinAngle = 0;
@@ -178,7 +183,13 @@ public final class Constants {
     public static final int climberLeftCANID = 39;
     public static final int climberRightCANID = 40;
 
-    public static final double maxEncoderTicks = 2000;
-    public static final double maxEncoderTicksNegative = -2000;
+    public static final double maxEncoderTicks = 318;
+    public static final double halfEncoderTicks = 130;
+
+    public static final double climberP = 0.02;
+    public static final double climberI = 0;
+    public static final double climberD = 0;
+
+
   }
 }

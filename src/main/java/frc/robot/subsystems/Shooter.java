@@ -4,74 +4,81 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 
 import frc.robot.Constants.ShooterConstants;
+import frc.utils.MiscUtils;
 
 public class Shooter {
 
-    private final CANSparkMax shooterDriveController1;
-    private final CANSparkMax shooterDriveController2;
+    private final CANSparkMax shooterDriveController;
     private final CANSparkMax shooterAngleController;
 
     private final RelativeEncoder shooterAngleEncoder;
+    private final RelativeEncoder shooterDriveEncoder;
 
     private final SparkPIDController shooterAnglePIDController;
+    private final SparkPIDController shooterDrivePIDController;
+
+    private double lastDriveSpeed = 0;
+    private double lastAngle = 0;
 
     public Shooter() { // Constructor Function
 
         // Define Motors
-        shooterDriveController1 = new CANSparkMax(ShooterConstants.shooterDriveControllerID1, MotorType.kBrushless);
-        shooterDriveController2 = new CANSparkMax(ShooterConstants.shooterDriveControllerID2, MotorType.kBrushless);
+        shooterDriveController = new CANSparkMax(ShooterConstants.shooterDriveControllerID1, MotorType.kBrushless);
         shooterAngleController = new CANSparkMax(ShooterConstants.shooterAngleControllerID, MotorType.kBrushless);
 
         // Reset motor controllers to factory settings
-        shooterDriveController1.restoreFactoryDefaults();
-        shooterDriveController2.restoreFactoryDefaults();
+        shooterDriveController.restoreFactoryDefaults();
         shooterAngleController.restoreFactoryDefaults();
 
         // Set current limits
-        shooterDriveController1.setSmartCurrentLimit(30, 30);
-        shooterDriveController2.setSmartCurrentLimit(30, 30);
+        shooterDriveController.setSmartCurrentLimit(30, 30);
         shooterAngleController.setSmartCurrentLimit(30, 30);
 
         // Get the angle controller encoder
         shooterAngleEncoder = shooterAngleController.getEncoder();
+        shooterDriveEncoder = shooterDriveController.getEncoder();
 
         // Get the angle PID controller
         shooterAnglePIDController = shooterAngleController.getPIDController();
+        shooterDrivePIDController = shooterDriveController.getPIDController();
 
         // Set Angle motor PID values
         shooterAnglePIDController.setP(ShooterConstants.shooterAngleP);
         shooterAnglePIDController.setI(ShooterConstants.shooterAngleI);
         shooterAnglePIDController.setD(ShooterConstants.shooterAngleD);
 
+        shooterDrivePIDController.setP(ShooterConstants.shooterDriveP);
+        shooterDrivePIDController.setI(ShooterConstants.shooterDriveI);
+        shooterDrivePIDController.setD(ShooterConstants.shooterDriveD);
+
         // Set PID Feedback Device
         shooterAnglePIDController.setFeedbackDevice(shooterAngleEncoder);
+        shooterAnglePIDController.setFeedbackDevice(shooterDriveEncoder);
 
         // Flash motor configuration to the controllers
-        shooterDriveController1.burnFlash();
-        shooterDriveController2.burnFlash();
+        shooterDriveController.burnFlash();
         shooterAngleController.burnFlash();
 
     }
 
     
     // Drive motor getters and setters
-    public void setDriveSpeed(double speedPower) {
-        shooterDriveController1.set(speedPower);
-        shooterDriveController2.set(-speedPower);
+    public void setDrivePower(double speedPower) {
+        shooterDriveController.set(speedPower);
     }
 
     public void stopDriveMotors() {
-        shooterDriveController1.set(0);
-        shooterDriveController2.set(0);
+        shooterDriveController.set(0);
     }
 
-    public double[] getDrivePower() {
-        return new double[] {shooterDriveController1.get(), shooterDriveController2.get()};
+    public double getDrivePower() {
+        return shooterDriveController.get();
     }
 
-    // Shooter angle operations
+    // Shooter encoder operations
     public void resetAngleEncoder() {
         shooterAngleEncoder.setPosition(0);
     }
@@ -84,9 +91,29 @@ public class Shooter {
         return shooterAngleEncoder.getPosition();
     }
 
-    // Angle Controller Setters
+    // Driver velocity control setters
+    public void setDriveSpeed(double speedRPMs) { // Multiplying to adjust for gearing
+        shooterDrivePIDController.setReference(speedRPMs/2.5, ControlType.kVelocity);
+    }
+
+    public void incramentDriveSpeed(double speedRPMs) {
+        lastDriveSpeed = MiscUtils.clamp(-300, 300, lastDriveSpeed + (speedRPMs/50));
+        this.setDriveSpeed(lastDriveSpeed);
+    }
+
+    public void resetDriveSpeed() {
+        lastDriveSpeed = 0;
+        this.setDriveSpeed(0);
+    }
+
+    // Angle position control setters
     public void setTargetAngle(double angleRotations) {
-        shooterAnglePIDController.setReference(Math.min(Math.max(ShooterConstants.shooterMinAngle, angleRotations), ShooterConstants.shooterMaxAngle), CANSparkMax.ControlType.kPosition);
+        shooterAnglePIDController.setReference(MiscUtils.clamp(ShooterConstants.shooterMinAngle, ShooterConstants.shooterMaxAngle, angleRotations), CANSparkMax.ControlType.kPosition);
+    }
+
+    public void incramentAngle(double rotations) {
+        lastAngle = MiscUtils.clamp(ShooterConstants.shooterMinAngle, ShooterConstants.shooterMaxAngle, lastAngle + rotations);
+        this.setDriveSpeed(lastAngle);
     }
      
 }

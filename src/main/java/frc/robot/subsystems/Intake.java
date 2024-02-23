@@ -3,15 +3,14 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
+
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
-
-import com.revrobotics.CANSparkBase;
+import frc.utils.MiscUtils;
 
 public class Intake {
 
@@ -24,10 +23,12 @@ public class Intake {
     // to execute PID operatons on the angle motor controller.
     private final SparkPIDController angleController;
 
+    // A status variable for intake toggle functionality
     boolean isExtended;
 
     public Intake() { // Constructor Function
 
+        // Intake toggle starts in the false case
         isExtended = false;
 
         // Define Spark Motors
@@ -58,6 +59,7 @@ public class Intake {
         angleController.setFF(0);
         angleController.setOutputRange(-1, 1);
 
+        // Making sure our intake doesent go through our robot
         angleController.setPositionPIDWrappingEnabled(true);
         angleController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
         angleController.setPositionPIDWrappingMaxInput(1);
@@ -66,6 +68,7 @@ public class Intake {
         intakeDrive.burnFlash();
         intakeAngle.burnFlash();
 
+        // Setting a starting position for the intake
         angleController.setReference(0.05, CANSparkMax.ControlType.kPosition);
         
 
@@ -77,11 +80,12 @@ public class Intake {
         intakeDrive.set(speed);
     }
 
+    // This only stops the motor when its in drive mode
     public void stopDrive() {
         intakeDrive.set(0);
     }
 
-    // Intake drive motor getter
+    // Intake drive motor getter (power mode only)
     public double getDriveSpeed() {
         return intakeDrive.get();
     }
@@ -93,7 +97,7 @@ public class Intake {
 
     // Angle Controller Setters
     public void setTargetAngle(double angleDegrees) {
-        angleController.setReference(Math.min(Math.max(angleDegrees, IntakeConstants.intakeMinAngle), IntakeConstants.intakeMaxAngle), CANSparkMax.ControlType.kPosition);
+        angleController.setReference(MiscUtils.clamp(IntakeConstants.intakeMinAngle, IntakeConstants.intakeMaxAngle, angleDegrees), ControlType.kPosition);
     }
 
     // Switch the state up and down
