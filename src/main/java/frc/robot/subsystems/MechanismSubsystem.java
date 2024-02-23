@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -14,8 +15,15 @@ public class MechanismSubsystem extends SubsystemBase {
   private final Shooter shooter = new Shooter();
   public final Climber climber = new Climber();
 
+  public final PIDController aimBotJr;
+
+  public final VisionSubsystem vision;
+
   /** Creates a new MechanismSubsystem. */
-  public MechanismSubsystem() {}
+  public MechanismSubsystem() {
+    aimBotJr = new PIDController(0.002, 0, 0);
+    vision = new VisionSubsystem();
+  }
 
   @Override
   public void periodic() {
@@ -30,7 +38,7 @@ public class MechanismSubsystem extends SubsystemBase {
   }
 
 
-  // Intake Setters
+  // Intake
   public void setIntakePower(double xSpeed) {
     intake.setDriveSpeed(xSpeed);
   }
@@ -39,7 +47,10 @@ public class MechanismSubsystem extends SubsystemBase {
     intake.setTargetAngle(angle);
   }
 
-  // Intake Getters
+  public void toggleIntakeState() {
+    intake.toggleState();
+  }
+
 
   // Shooter Setters
   public void setShooterPower(double shooterSpeed) {
@@ -66,14 +77,13 @@ public class MechanismSubsystem extends SubsystemBase {
     shooter.setTargetAngle(angleRotations);
   }
 
-  public void toggleIntakeState() {
-    intake.toggleState();
+  public void setShooterAngleWithVision() { // WARNING: DO NOT USE THIS METHOD, IT IS NOT WORKING AND CAN BREAK YOUR ROBOT!
+    shooter.setTargetAngle(aimBotJr.calculate(shooter.getAngleEncoderPos(), vision.getAprilTagZ(1)));
   }
 
+  // Climber
   public double[] getClimberEncoderPositions() {
     return climber.getEncoderValues();
   }
-
-  // Shooter Getters
 
 }

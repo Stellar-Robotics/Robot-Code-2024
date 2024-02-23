@@ -17,7 +17,7 @@ import frc.robot.subsystems.MechanismSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -213,7 +213,7 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
+  //private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     //new Trigger(m_exampleSubsystem::exampleCondition)
        // .onTrue(new ExampleCommand(m_exampleSubsystem));
@@ -225,7 +225,7 @@ public class RobotContainer {
     /*visionSubsystem.setDefaultCommand(
       new RunCommand(() -> visionSubsystem.getAprilTagZ(1), visionSubsystem)
     );*/
-  }
+  //}
 
   /**
    * Use this method to define your button->command mappings. Buttons can be

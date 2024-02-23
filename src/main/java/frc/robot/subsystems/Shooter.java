@@ -26,7 +26,7 @@ public class Shooter {
     public Shooter() { // Constructor Function
 
         // Define Motors
-        shooterDriveController = new CANSparkMax(ShooterConstants.shooterDriveControllerID1, MotorType.kBrushless);
+        shooterDriveController = new CANSparkMax(ShooterConstants.shooterDriveControllerID, MotorType.kBrushless);
         shooterAngleController = new CANSparkMax(ShooterConstants.shooterAngleControllerID, MotorType.kBrushless);
 
         // Reset motor controllers to factory settings

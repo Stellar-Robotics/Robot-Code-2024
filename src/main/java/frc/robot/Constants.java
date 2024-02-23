@@ -159,8 +159,7 @@ public final class Constants {
 
   public static class ShooterConstants {
     // Motor contrller Id's
-    public static final int shooterDriveControllerID1 = 10;
-    public static final int shooterDriveControllerID2 = 11;
+    public static final int shooterDriveControllerID = 11;
     public static final int shooterAngleControllerID = 12;
 
     // PID values for the shooter angle
