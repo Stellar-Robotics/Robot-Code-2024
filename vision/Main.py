@@ -3,6 +3,8 @@ import numpy as np
 import robotpy_apriltag as apriltag
 import ntcore
 from wpimath.geometry import *
+from wpimath.filter import LinearFilter
+import time
 
 def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose : Transform3d, tagId : int):
     # closest thing to assumed odometry coordinate system is EDN, so we'll convert the absolute pose to that
@@ -32,9 +34,13 @@ def main():
    frameZTopic = smartDashboard.getDoubleTopic("frameZ").publish()
 
    absolutePoseTopic = smartDashboard.getDoubleArrayTopic("robotPose").publish()
+
+   tagsToFollow = [4, 7, 11, 12, 13, 14, 15, 16]
+
+   frameZFilter = LinearFilter.singlePoleIIR(0.5, 0.2)
    
    # Initialize the camera
-   cap = cv2.VideoCapture(0)
+   cap = cv2.VideoCapture(1)
 
    # Create an AprilTag detector
    detector = apriltag.AprilTagDetector()
@@ -45,7 +51,6 @@ def main():
    #fieldLayout = apriltag.loadAprilTagLayoutField(field=field)
    fieldLayout = apriltag.AprilTagFieldLayout("fieldLayout.json") # Uncomment if the load method doesn't work
 
-   print(fieldLayout.getTagPose(16))
 
    while True:
       # Capture a frame from the camera
@@ -53,7 +58,7 @@ def main():
 
       # if the cam read fails, break
       if not ret:
-            break
+         break
       
       # Convert the frame to grayscale for AprilTag detection
       gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -61,8 +66,8 @@ def main():
       # Detect AprilTags in the grayscale frame
       tags = detector.detect(gray)
       
-      #
-      tagToFollow = next(filter(lambda x: x.getId() == 8, tags), None)
+      
+      tagToFollow = next(filter(lambda x: x.getId() in tagsToFollow, tags), None)
 
       # If the tag wasn't found, skip the rest of the loop
       if tagToFollow is None:
@@ -82,16 +87,22 @@ def main():
 
       robotPoseArray = np.array([robotX,robotZ,robotRotation])
 
-      #xTopic.set(x)
-      #zTopic.set(z)
-      #rotTopic.set(rotation)
-      #absolutePoseTopic.set(robotPoseArray)
+      xTopic.set(x)
+      zTopic.set(z)
+      rotTopic.set(rotation)
+      absolutePoseTopic.set(robotPoseArray)
 
       frameXTopic.set(tagToFollow.getCenter().x)
       frameZTopic.set(pose.z)
 
       #print(f"{x}, {y}, {z}, {rotation}")
-      print(f"Robot Coordinates (EUN): {robotX}, {robotY}, {robotZ}, {rotation} - Tag pose (EDN?): {x}, {y}, {z}")
+      #print(f"Robot Coordinates (EUN): {robotX}, {robotY}, {robotZ}, {rotation} - Tag pose (EDN?): {x}, {y}, {z}")
+      print(frameZFilter.calculate(pose.z))
+
+      #cv2.imshow("frame", frame)
+
+      time.sleep(0.1)
+      #cv2.waitKey(100)
 
       #piTable.putValue("rotation", rotation)
    # Release the camera and close OpenCV windows
