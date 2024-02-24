@@ -150,15 +150,18 @@ public class RobotContainer {
         // Set shooter speed
         if (operatorController.getLeftTriggerAxis() > 0.8)
         {
-          mechSystem.setShooterSpeed(6250);
+          //mechSystem.setShooterSpeed(6250);
+          mechSystem.setShooterPower(0.5);
         }
         else if (operatorController.getRightTriggerAxis() > 0.8)
         {
-          mechSystem.setShooterSpeed(-6250);
+          //mechSystem.setShooterSpeed(-6250);
+          mechSystem.setShooterPower(-0.5);
         }
         else 
         {
-          mechSystem.setShooterSpeed(0);
+          //mechSystem.setShooterSpeed(0);
+          mechSystem.setShooterPower(0);
         }
 
       } 
