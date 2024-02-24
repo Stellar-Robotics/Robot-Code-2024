@@ -34,8 +34,8 @@ public class Shooter {
         shooterAngleController.restoreFactoryDefaults();
 
         // Set current limits
-        shooterDriveController.setSmartCurrentLimit(30, 30);
-        shooterAngleController.setSmartCurrentLimit(30, 30);
+        shooterDriveController.setSmartCurrentLimit(40);
+        shooterAngleController.setSmartCurrentLimit(30);
 
         // Get the angle controller encoder
         shooterAngleEncoder = shooterAngleController.getEncoder();
@@ -50,13 +50,14 @@ public class Shooter {
         shooterAnglePIDController.setI(ShooterConstants.shooterAngleI);
         shooterAnglePIDController.setD(ShooterConstants.shooterAngleD);
 
-        shooterDrivePIDController.setP(ShooterConstants.shooterDriveP);
-        shooterDrivePIDController.setI(ShooterConstants.shooterDriveI);
-        shooterDrivePIDController.setD(ShooterConstants.shooterDriveD);
+        //shooterDrivePIDController.setP(ShooterConstants.shooterDriveP);
+        //shooterDrivePIDController.setI(ShooterConstants.shooterDriveI);
+        //shooterDrivePIDController.setD(ShooterConstants.shooterDriveD);
 
         // Set PID Feedback Device
         shooterAnglePIDController.setFeedbackDevice(shooterAngleEncoder);
-        shooterAnglePIDController.setFeedbackDevice(shooterDriveEncoder);
+        //shooterDrivePIDController.setFeedbackDevice(shooterDriveEncoder);
+        shooterAngleController.setInverted(true);
 
         // Flash motor configuration to the controllers
         shooterDriveController.burnFlash();
@@ -71,7 +72,7 @@ public class Shooter {
     }
 
     public void stopDriveMotors() {
-        shooterDriveController.set(0);
+        //shooterDriveController.set(0);
     }
 
     public double getDrivePower() {
@@ -93,12 +94,14 @@ public class Shooter {
 
     // Driver velocity control setters
     public void setDriveSpeed(double speedRPMs) { // Multiplying to adjust for gearing
-        shooterDrivePIDController.setReference(speedRPMs/2.5, ControlType.kVelocity);
+        //shooterDrivePIDController.setReference(speedRPMs/2.5, ControlType.kVelocity);
     }
 
     public void incramentDriveSpeed(double speedRPMs) {
-        lastDriveSpeed = MiscUtils.clamp(-300, 300, lastDriveSpeed + (speedRPMs/50));
-        this.setDriveSpeed(lastDriveSpeed);
+        //lastDriveSpeed = MiscUtils.clamp(-300, 300, lastDriveSpeed + (speedRPMs/50));
+        //this.setDriveSpeed(lastDriveSpeed);
+
+        this.shooterDriveController.set(1);
     }
 
     public void resetDriveSpeed() {
@@ -113,7 +116,7 @@ public class Shooter {
 
     public void incramentAngle(double rotations) {
         lastAngle = MiscUtils.clamp(ShooterConstants.shooterMinAngle, ShooterConstants.shooterMaxAngle, lastAngle + rotations);
-        this.setDriveSpeed(lastAngle);
+        this.setTargetAngle(lastAngle);
     }
      
 }

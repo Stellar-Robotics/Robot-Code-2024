@@ -20,7 +20,10 @@ public class Climber {
     private final SparkPIDController climberLeftPIDController;
     private final SparkPIDController climberRightPIDController;
 
-    private double targetPosition = 0;
+    private double targetPositionBoth = 0;
+    private double targetPositionLeft = 0;
+    private double targetPositionRight = 0;
+
 
 
 
@@ -91,11 +94,23 @@ public class Climber {
         climberRightPIDController.setReference(MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, powerRotations), CANSparkMax.ControlType.kPosition);
     }
 
-    public void incramentPosition(double speed) {
+    public void incramentPositionBoth(double speed) {
         // Prevent the incrament for going beyond the max range with a clamp
-        targetPosition = MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, targetPosition + speed);
-        this.setClimberLeftPosition(targetPosition);
-        this.setClimberRightPosition(targetPosition);
+        targetPositionBoth = MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, targetPositionBoth + speed);
+        this.setClimberLeftPosition(targetPositionBoth);
+        this.setClimberRightPosition(targetPositionBoth);
+    }
+
+    public void incramentPositionLeft(double speed) {
+        // Prevent the incrament for going beyond the max range with a clamp
+        targetPositionLeft = MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, targetPositionLeft + speed);
+        this.setClimberLeftPosition(targetPositionLeft);
+    }
+
+    public void incramentPositionRight(double speed) {
+        // Prevent the incrament for going beyond the max range with a clamp
+        targetPositionRight = MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, targetPositionRight + speed);
+        this.setClimberRightPosition(targetPositionRight);
     }
 
     // Getters
