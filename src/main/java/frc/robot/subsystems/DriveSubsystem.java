@@ -176,7 +176,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveWithAbsoluteAngle(double xSpeed, double ySpeed, Rotation2d angle, boolean fieldRelative, boolean rateLimit) {
-    System.out.println(xSpeed+" "+ySpeed+" "+angle.getDegrees());
+    //System.out.println(xSpeed+" "+ySpeed+" "+angle.getDegrees());
     double robotAngle = m_gyro.getAngle(IMUAxis.kZ) % 360;
 
     if (robotAngle < 0) {
@@ -223,7 +223,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    System.out.println(rot);
+    //System.out.println(rot);
     double xSpeedCommanded;
     double ySpeedCommanded;
 

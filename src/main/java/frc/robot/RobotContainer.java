@@ -82,6 +82,8 @@ public class RobotContainer {
     
     mechSystem.setDefaultCommand(new RunCommand(() -> {
 
+      int operatorPOV = operatorController.getPOV(0);
+
       // Intake Pitch Controls
       if (operatorController.getAButtonPressed()) {
         mechSystem.toggleIntakeState();
@@ -98,28 +100,171 @@ public class RobotContainer {
 
 
       // Set Climber Values
-      mechSystem.climber.incramentPosition(MathUtil.applyDeadband(operatorController.getLeftY(), 0.3));
+      //mechSystem.climber.incramentPosition(MathUtil.applyDeadband(operatorController.getLeftY(), 0.3));
 
 
-      // Shooter Speed Controls
+      /* Shooter Speed Controls
       if (operatorController.getXButton()) {
-        if (operatorController.getPOV(0) > 0) {
+        if (operatorController.getLeftY() > 0.8) {
           mechSystem.incramentShooter(10);
-        } else if (operatorController.getPOV(180) < 0) {
+        } else if (operatorController.getLeftY() < -0.8) {
           mechSystem.incramentShooter(-10);
         }
       } else {
         mechSystem.stopShooter();
       }
 
+
       // Shooter angle controls
       if (!operatorController.getXButton() && operatorController.getYButton()) {
-        if (operatorController.getPOV(0) > 0) {
+        if (operatorController.getLeftY() > 0.8) {
           mechSystem.incramentShooterAngle(0.2);
-        } else if (operatorController.getPOV(180) < 0) {
+        } else if (operatorController.getLeftY() < -0.8) {
           mechSystem.incramentShooterAngle(-0.2);
         }
+      }*/
+
+
+
+      // Operator Control Prefrences
+
+
+      if (operatorController.getXButton()) 
+      { // X hold is for shooter preset mode
+
+        // Bumpers touching speaker preset
+        if (operatorPOV == 0) 
+        {
+          mechSystem.setShooterAngle(0);
+        }
+
+        // Bumpers touching Amp preset
+        if (operatorPOV == 270) 
+        {
+          mechSystem.setShooterAngle(0);
+        }
+
+        // Aligned with chain trap shoot preset
+        if (operatorPOV == 180) 
+        {
+          mechSystem.setShooterAngle(0);
+        }
+
+        // Set shooter speed
+        if (operatorController.getLeftTriggerAxis() > 0.8)
+        {
+          //mechSystem.setShooterSpeed(6250);
+          mechSystem.setShooterPower(0.5);
+        }
+        else if (operatorController.getRightTriggerAxis() > 0.8)
+        {
+          //mechSystem.setShooterSpeed(-6250);
+          mechSystem.setShooterPower(-0.5);
+        }
+        else 
+        {
+          //mechSystem.setShooterSpeed(0);
+          mechSystem.setShooterPower(0);
+        }
+
+      } 
+      
+
+      else if (operatorController.getYButton()) 
+      { // Y hold is designated as a manual shooter control mode
+
+        // Incrament shooter angle in the positive direction
+        if (operatorPOV == 0)
+        {
+          mechSystem.incramentShooterAngle(0.4);
+        }
+
+        // Incrament shooter angle in the negative direction
+        else if (operatorPOV == 180) 
+        {
+          mechSystem.incramentShooterAngle(-0.4);
+        }
+
+        // Incrament shooter speed
+        if (operatorController.getLeftY() > 0.8) 
+        {
+          mechSystem.incramentShooter(10);
+        } 
+        else if (operatorController.getLeftY() < -0.8) 
+        {
+          mechSystem.incramentShooter(-10);
+        }
+
+
+      } 
+      
+
+      else if (operatorController.getLeftTriggerAxis() > 0.8 &&
+        operatorController.getRightTriggerAxis() > 0.8)
+      { // Double bumper hold is designated for climber controls
+        
+        // Left climber controls
+        if (operatorController.getLeftY() > 0.8)
+        {
+          mechSystem.climber.incramentPositionLeft(0.4);
+        }
+
+        else if (operatorController.getLeftY() < -0.8)
+        {
+          mechSystem.climber.incramentPositionLeft(-0.4);
+        }
+
+        // Right climber controls
+        if (operatorController.getRightY() > 0.8)
+        {
+          mechSystem.climber.incramentPositionRight(0.4);
+        }
+
+        else if (operatorController.getRightY() < -0.8)
+        {
+          mechSystem.climber.incramentPositionRight(-0.4);
+        }
+
+      } 
+
+
+      else if (operatorController.getBButton()) 
+      { // B hold is a wildcard as of writing this comment
+        
+      } 
+      
+      
+      else 
+      { // Default operating mode that allows intake functionality only
+
+        // Stop the shooter
+        mechSystem.setShooterSpeed(0);
+
+        // Set intake power
+        if (operatorController.getLeftBumper())
+        {
+          mechSystem.setIntakePower(1);
+        }
+
+        else if (operatorController.getRightBumper())
+        {
+          mechSystem.setIntakePower(-1);
+        }
+
+        else
+        {
+          mechSystem.setIntakePower(0);
+        }
+
+        // Toggle intake angle
+        if (operatorController.getAButtonPressed())
+        {
+          mechSystem.toggleIntakeState();
+        }
+
       }
+
+
 
       // Debugging Code
       /*if (operatorController.getBButton()) {
@@ -153,14 +298,14 @@ public class RobotContainer {
         // Primairy Stellar Controller
         if (driverController.getRightCenterButton()) {
           driveSystem.driveWithAim(
-            /*-MathUtil.applyDeadband(*/-driverController.getLeftX()/*, OIConstants.kDriveDeadband)*/,
-            /*-MathUtil.applyDeadband(*/-driverController.getLeftY()/*, OIConstants.kDriveDeadband)*/,
+            -driverController.getLeftX(),
+            -driverController.getLeftY(),
             1, // what AprilTag to target???
             true, true);
         } else {
           driveSystem.driveWithAbsoluteAngle(
-            /*-MathUtil.applyDeadband(*/-driverController.getLeftX()/*, OIConstants.kDriveDeadband)*/,
-            /*-MathUtil.applyDeadband(*/-driverController.getLeftY()/*, OIConstants.kDriveDeadband)*/,
+            -driverController.getLeftX(),
+            -driverController.getLeftY(),
             driverController.getRightRotary(),
             true, true);
         }

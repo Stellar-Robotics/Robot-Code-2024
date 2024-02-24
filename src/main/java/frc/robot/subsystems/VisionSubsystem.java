@@ -45,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         nt.startClient4("robot");
         nt.setServer("localhost"); // where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-        System.out.println();
+        //System.out.println();
   }
 
   /**
