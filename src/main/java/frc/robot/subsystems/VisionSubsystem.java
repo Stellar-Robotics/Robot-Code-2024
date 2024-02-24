@@ -6,7 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -26,6 +26,8 @@ public class VisionSubsystem extends SubsystemBase {
 
   DoubleSubscriber frameX;
   DoubleSubscriber frameZ;
+
+  LinearFilter zFilter = LinearFilter.singlePoleIIR(0.5, 0.02);
 
   public Trajectory targetTrajectory;
 
@@ -66,7 +68,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getAprilTagZ(int tagId) {
-    return frameZ.get();
+    return zFilter.calculate(frameZ.get());
   }
 
 
