@@ -33,8 +33,8 @@ public class Shooter {
         shooterDriveController.restoreFactoryDefaults();
         shooterAngleController.restoreFactoryDefaults();
 
-        // Set current limits
-        shooterDriveController.setSmartCurrentLimit(40);
+        // Set current
+        shooterDriveController.setSmartCurrentLimit(80);
         shooterAngleController.setSmartCurrentLimit(30);
 
         // Get the angle controller encoder

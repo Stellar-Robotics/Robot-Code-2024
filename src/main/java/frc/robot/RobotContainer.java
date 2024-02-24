@@ -173,13 +173,13 @@ public class RobotContainer {
         // Incrament shooter angle in the positive direction
         if (operatorPOV == 0)
         {
-          mechSystem.incramentShooterAngle(0.4);
+          mechSystem.incramentShooterAngle(1);
         }
 
         // Incrament shooter angle in the negative direction
         else if (operatorPOV == 180) 
         {
-          mechSystem.incramentShooterAngle(-0.4);
+          mechSystem.incramentShooterAngle(-1);
         }
 
         // Incrament shooter speed
@@ -200,11 +200,15 @@ public class RobotContainer {
         operatorController.getRightTriggerAxis() > 0.8)
       { // Double bumper hold is designated for climber controls
         
+
+        mechSystem.climber.incramentPositionLeft(operatorController.getLeftY());
+        
         // Left climber controls
         if (operatorController.getLeftY() > 0.8)
         {
           mechSystem.climber.incramentPositionLeft(0.4);
         }
+
 
         else if (operatorController.getLeftY() < -0.8)
         {

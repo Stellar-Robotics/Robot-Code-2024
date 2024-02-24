@@ -27,12 +27,12 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.5;
-    public static final double kMaxAngularSpeed = 3 * Math.PI; // radians per second
+    public static final double kMaxSpeedMetersPerSecond = 6.0;
+    public static final double kMaxAngularSpeed = 4 * Math.PI; // radians per second
 
-    public static final double kDirectionSlewRate = 1.2; // radians per second
-    public static final double kMagnitudeSlewRate = 1.3; // percent per second (1 = 100%)
-    public static final double kRotationalSlewRate = 2.0; // percen t per second (1 = 100%)
+    public static final double kDirectionSlewRate = 2.5; // radians per second
+    public static final double kMagnitudeSlewRate = 2.7; // percent per second (1 = 100%)
+    public static final double kRotationalSlewRate = 3.0; // percen t per second (1 = 100%)
 
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(27);
@@ -95,14 +95,14 @@ public final class Constants {
     public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
     public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.04;
+    public static final double kDrivingP = 0.05;
     public static final double kDrivingI = 0;
     public static final double kDrivingD = 0;
     public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 1;
+    public static final double kTurningP = 1.5;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;
@@ -113,7 +113,7 @@ public final class Constants {
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
     public static final int kDrivingMotorCurrentLimit = 50; // amps
-    public static final int kTurningMotorCurrentLimit = 20; // amps
+    public static final int kTurningMotorCurrentLimit = 25; // amps
   }
 
   public static final class OIConstants {
@@ -148,7 +148,7 @@ public final class Constants {
     public static final int intakeAngleControllerId = 54;
 
     // PID values for the intake angle
-    public static final double intakeAngleP = 1.2;
+    public static final double intakeAngleP = 1.3;
     public static final double intakeAngleI = 0;
     public static final double intakeAngleD = 0;
 
