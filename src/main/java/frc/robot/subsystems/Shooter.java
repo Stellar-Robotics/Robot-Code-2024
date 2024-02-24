@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+import frc.robot.subsystems.VisionSubsystem;
 
 import frc.robot.Constants.ShooterConstants;
 import frc.utils.MiscUtils;
@@ -20,10 +21,17 @@ public class Shooter {
     private final SparkPIDController shooterAnglePIDController;
     private final SparkPIDController shooterDrivePIDController;
 
+    private VisionSubsystem vision;
+
     private double lastDriveSpeed = 0;
     private double lastAngle = 0;
 
-    public Shooter() { // Constructor Function
+    private final double SPEAKER_HEIGHT = 2.047; // meters
+    private final double Z_OFFSET = 0.2285; // meters
+
+    private final double DEGREES_TO_ROTATIONS = 0; // TODO: THIS IS INCORRECT!! MEASURE THIS!!!
+
+    public Shooter(VisionSubsystem vision) {
 
         // Define Motors
         shooterDriveController = new CANSparkMax(ShooterConstants.shooterDriveControllerID, MotorType.kBrushless);
@@ -62,6 +70,7 @@ public class Shooter {
         shooterDriveController.burnFlash();
         shooterAngleController.burnFlash();
 
+        this.vision = vision;
     }
 
     
@@ -109,6 +118,14 @@ public class Shooter {
     // Angle position control setters
     public void setTargetAngle(double angleRotations) {
         shooterAnglePIDController.setReference(MiscUtils.clamp(ShooterConstants.shooterMinAngle, ShooterConstants.shooterMaxAngle, angleRotations), CANSparkMax.ControlType.kPosition);
+    }
+
+    public void setTargetAngleDegrees(double degrees) {
+        this.setTargetAngle(degrees * DEGREES_TO_ROTATIONS);
+    }
+
+    public void setVisionAngle() {
+        this.setTargetAngleDegrees(Math.toDegrees(Math.atan(SPEAKER_HEIGHT / (vision.getAprilTagZ(0) - Z_OFFSET))));
     }
 
     public void incramentAngle(double rotations) {

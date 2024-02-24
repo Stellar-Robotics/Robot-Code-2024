@@ -64,7 +64,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 
   // Odometry class for tracking robot pose
-  VisionSubsystem vision = new VisionSubsystem();
+  private VisionSubsystem vision;
   SwerveDrivePoseEstimator m_odometry;
 
   // Target robot angle
@@ -83,7 +83,7 @@ public class DriveSubsystem extends SubsystemBase {
   DoubleSubscriber dSub;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(Pose2d initialPoseMeters) {
+  public DriveSubsystem(Pose2d initialPoseMeters, VisionSubsystem vision) {
 
     nt = NetworkTableInstance.getDefault();
     table = nt.getTable("SmartDashboard");
@@ -115,6 +115,8 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       },
       initialPoseMeters);
+
+    this.vision = vision;
   }
 
   /** Creates a new DriveSubsystem. */

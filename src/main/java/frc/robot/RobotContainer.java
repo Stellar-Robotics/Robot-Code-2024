@@ -11,9 +11,11 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.StellarController.Button;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -27,8 +29,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem driveSystem = new DriveSubsystem(new Pose2d(6, 6, new Rotation2d(-1)));
-  private final MechanismSubsystem mechSystem = new MechanismSubsystem();
+  private final VisionSubsystem visionSystem = new VisionSubsystem();
+  private final DriveSubsystem driveSystem = new DriveSubsystem(new Pose2d(6, 6, new Rotation2d(-1)), visionSystem);
+  private final MechanismSubsystem mechSystem = new MechanismSubsystem(visionSystem);
   // The driver's controller
   StellarController driverController = new StellarController(OIConstants.kDriverControllerPort);
   XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);

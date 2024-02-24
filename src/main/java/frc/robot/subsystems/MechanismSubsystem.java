@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -12,17 +11,15 @@ public class MechanismSubsystem extends SubsystemBase {
 
   // Define Mechanisms
   private final Intake intake = new Intake();
-  private final Shooter shooter = new Shooter();
+  private final Shooter shooter;
   public final Climber climber = new Climber();
-
-  public final PIDController aimBotJr;
 
   public final VisionSubsystem vision;
 
   /** Creates a new MechanismSubsystem. */
-  public MechanismSubsystem() {
-    aimBotJr = new PIDController(0.002, 0, 0);
-    vision = new VisionSubsystem();
+  public MechanismSubsystem(VisionSubsystem vision) {
+    this.vision = vision;
+    this.shooter = new Shooter(vision);
   }
 
   @Override
@@ -69,6 +66,8 @@ public class MechanismSubsystem extends SubsystemBase {
     shooter.incramentAngle(rotations);
   }
 
+
+
   public void stopShooter() {
     shooter.resetDriveSpeed();
   }
@@ -77,8 +76,8 @@ public class MechanismSubsystem extends SubsystemBase {
     shooter.setTargetAngle(angleRotations);
   }
 
-  public void setShooterAngleWithVision() { // WARNING: DO NOT USE THIS METHOD, IT IS NOT WORKING AND CAN BREAK YOUR ROBOT!
-    shooter.setTargetAngle(aimBotJr.calculate(shooter.getAngleEncoderPos(), vision.getAprilTagZ(1)));
+  public void setShooterAngleWithVision() { // WARNING: MAYBE USE THIS METHOD, IT MAY OR MAY NOT BREAK THE ROBOT?
+    shooter.setVisionAngle();
   }
 
   // Climber
