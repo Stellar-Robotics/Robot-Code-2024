@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.utils.MiscUtils;
 
 public class Intake {
@@ -18,6 +19,7 @@ public class Intake {
     private final CANSparkMax intakeDrive;
     private final CANSparkMax intakeAngle;
     private final AbsoluteEncoder intakeAngleEncoder;
+    private double lastAngle;
 
     // Using SparkPIDController instead of a generic one in order
     // to execute PID operatons on the angle motor controller.
@@ -30,6 +32,7 @@ public class Intake {
 
         // Intake toggle starts in the false case
         isExtended = false;
+        lastAngle = 0.6;
 
         // Define Spark Motors
         intakeDrive = new CANSparkMax(IntakeConstants.intakeDriveControllerId, MotorType.kBrushless);
@@ -100,12 +103,20 @@ public class Intake {
         angleController.setReference(MiscUtils.clamp(IntakeConstants.intakeMinAngle, IntakeConstants.intakeMaxAngle, angleDegrees), ControlType.kPosition);
     }
 
+    // Incrament intake angle
+    public void incramentAngle(double rotations) {
+        lastAngle = MiscUtils.clamp(IntakeConstants.intakeMinAngle, IntakeConstants.intakeMaxAngle, lastAngle + rotations);
+        this.setTargetAngle(lastAngle);
+    }
+
+
+
     // Switch the state up and down
     public void toggleState() {
         if (isExtended) {
             this.setTargetAngle(0.35);
         } else {
-            this.setTargetAngle(0.05);
+            this.setTargetAngle(0.18);
         }
         // Update our extension status
         isExtended = !isExtended;

@@ -153,7 +153,7 @@ public final class Constants {
     public static final double intakeAngleD = 0;
 
     // Min and Max rotational angles
-    public static final double intakeMaxAngle = 5;
+    public static final double intakeMaxAngle = 0.35;
     public static final double intakeMinAngle = 0.05;
   }
 

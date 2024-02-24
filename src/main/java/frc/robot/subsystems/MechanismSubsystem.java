@@ -13,6 +13,7 @@ public class MechanismSubsystem extends SubsystemBase {
   private final Intake intake = new Intake();
   private final Shooter shooter;
   public final Climber climber = new Climber();
+  public final Hopper hopper = new Hopper();
 
   public final VisionSubsystem vision;
 
@@ -46,6 +47,10 @@ public class MechanismSubsystem extends SubsystemBase {
 
   public void toggleIntakeState() {
     intake.toggleState();
+  }
+
+  public void incramentIntakeAngle(double rotations) {
+    intake.incramentAngle(rotations);
   }
 
 

@@ -42,7 +42,7 @@ public class Shooter {
         shooterAngleController.restoreFactoryDefaults();
 
         // Set current
-        shooterDriveController.setSmartCurrentLimit(80);
+        shooterDriveController.setSmartCurrentLimit(60);
         shooterAngleController.setSmartCurrentLimit(30);
 
         // Get the angle controller encoder
@@ -58,13 +58,13 @@ public class Shooter {
         shooterAnglePIDController.setI(ShooterConstants.shooterAngleI);
         shooterAnglePIDController.setD(ShooterConstants.shooterAngleD);
 
-        //shooterDrivePIDController.setP(ShooterConstants.shooterDriveP);
-        //shooterDrivePIDController.setI(ShooterConstants.shooterDriveI);
-        //shooterDrivePIDController.setD(ShooterConstants.shooterDriveD);
+        shooterDrivePIDController.setP(ShooterConstants.shooterDriveP);
+        shooterDrivePIDController.setI(ShooterConstants.shooterDriveI);
+        shooterDrivePIDController.setD(ShooterConstants.shooterDriveD);
 
         // Set PID Feedback Device
         shooterAnglePIDController.setFeedbackDevice(shooterAngleEncoder);
-        //shooterDrivePIDController.setFeedbackDevice(shooterDriveEncoder);
+        shooterDrivePIDController.setFeedbackDevice(shooterDriveEncoder);
         shooterAngleController.setInverted(true);
 
         // Flash motor configuration to the controllers
@@ -103,12 +103,12 @@ public class Shooter {
 
     // Driver velocity control setters
     public void setDriveSpeed(double speedRPMs) { // Multiplying to adjust for gearing
-        //shooterDrivePIDController.setReference(speedRPMs/2.5, ControlType.kVelocity);
+        shooterDrivePIDController.setReference(speedRPMs/2.5, ControlType.kVelocity);
     }
 
     public void incramentDriveSpeed(double speedRPMs) {
-        //lastDriveSpeed = MiscUtils.clamp(-300, 300, lastDriveSpeed + (speedRPMs/50));
-        //this.setDriveSpeed(lastDriveSpeed);
+        lastDriveSpeed = MiscUtils.clamp(-300, 300, lastDriveSpeed + (speedRPMs/50));
+        this.setDriveSpeed(lastDriveSpeed);
 
         this.shooterDriveController.set(1);
     }
