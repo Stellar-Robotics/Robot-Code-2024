@@ -66,6 +66,7 @@ public class Shooter {
         shooterAnglePIDController.setFeedbackDevice(shooterAngleEncoder);
         shooterDrivePIDController.setFeedbackDevice(shooterDriveEncoder);
         shooterAngleController.setInverted(true);
+        shooterDriveController.setInverted(true);
 
         // Flash motor configuration to the controllers
         shooterDriveController.burnFlash();
@@ -102,7 +103,7 @@ public class Shooter {
     }
 
     // Driver velocity control setters
-    public void setDriveSpeed(double speedRPMs) { // Multiplying to adjust for gearing
+    public void setDriveSpeed(double speedRPMs) { // Dividing to adjust for gearing
         shooterDrivePIDController.setReference(speedRPMs/2.5, ControlType.kVelocity);
     }
 

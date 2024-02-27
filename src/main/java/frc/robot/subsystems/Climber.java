@@ -103,16 +103,14 @@ public class Climber {
 
     public void incramentPositionLeft(double speed) {
         // Prevent the incrament for going beyond the max range with a clamp
-        //targetPositionLeft = MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, targetPositionLeft + speed);
-        //this.setClimberLeftPosition(targetPositionLeft);
-        this.setClimberLeftPower(speed);
+        targetPositionLeft = MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, targetPositionLeft + speed);
+        this.setClimberLeftPosition(targetPositionLeft);
     }
 
     public void incramentPositionRight(double speed) {
         // Prevent the incrament for going beyond the max range with a clamp
-        //targetPositionRight = MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, targetPositionRight + speed);
-        //this.setClimberRightPosition(targetPositionRight);
-        this.setClimberRightPower(speed);
+        targetPositionRight = MiscUtils.clamp(0, ClimberConstants.halfEncoderTicks, targetPositionRight + speed);
+        this.setClimberRightPosition(targetPositionRight);
     }
 
     // Getters

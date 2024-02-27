@@ -40,7 +40,7 @@ def main():
    frameZFilter = LinearFilter.singlePoleIIR(0.5, 0.2)
    
    # Initialize the camera
-   cap = cv2.VideoCapture(1)
+   cap = cv2.VideoCapture(0)
 
    # Create an AprilTag detector
    detector = apriltag.AprilTagDetector()

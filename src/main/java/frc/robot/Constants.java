@@ -175,6 +175,11 @@ public final class Constants {
     // Min and Max rotational angle in encoder ticks
     public static final double shooterMaxAngle = 200;
     public static final double shooterMinAngle = 0;
+
+    public static double speakerPresetPosition = 130;
+    public static double ampPresetPosition = 140;
+    public static double redLinePresetPosition = 15;
+    public static double trapPresetPosition = 32;
   }
 
   public static class ClimberConstants {
@@ -183,10 +188,10 @@ public final class Constants {
     public static final int climberRightCANID = 40;
 
     public static final double maxEncoderTicks = 318;
-    public static final double halfEncoderTicks = 130;
+    public static final double halfEncoderTicks = 150;
 
-    public static final double climberP = 0.02;
-    public static final double climberI = 0;
+    public static final double climberP = 0.025;
+    public static final double climberI = 0.0001;
     public static final double climberD = 0;
 
 

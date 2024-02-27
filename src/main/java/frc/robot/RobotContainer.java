@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.utils.MiscUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -74,7 +75,7 @@ public class RobotContainer {
         }
 
 
-        if (operatorController.getLeftTriggerAxis() > 0.8)
+        /*if (operatorController.getLeftTriggerAxis() > 0.8)
         { // Set shooter speed
           mechSystem.setShooterSpeed(6250);
           //mechSystem.setShooterPower(0.5);
@@ -88,18 +89,18 @@ public class RobotContainer {
         {
           mechSystem.setShooterSpeed(0);
           //mechSystem.setShooterPower(0);
-        }
+        }*/
 
 
         if (operatorController.getLeftBumper())
         { // Set hopper and intake speed bindings
           mechSystem.setIntakePower(1);
-          //mechSystem.setHopperPower(1);
+          //mechSystem.hopper.setPower(1);
         }
         else if (operatorController.getRightBumper())
         {
           mechSystem.setIntakePower(-1);
-          //mechSystem.setHopperPower(-1);
+          //mechSystem.hopper.setPower(-1);
         }
         else
         {
@@ -125,19 +126,20 @@ public class RobotContainer {
         }
 
 
-        if (operatorController.getLeftY() > 0.8) 
+        /*if (operatorController.getLeftY() > 0.8) 
         { // Incrament shooter speed
-          //mechSystem.incramentShooter(0.2);
-          mechSystem.setShooterPower(0.1);
+          mechSystem.incramentShooter(1);
+          //mechSystem.setShooterPower(0.1);
         } 
         else if (operatorController.getLeftY() < -0.8) 
         {
-          mechSystem.setShooterPower(-0.1);
+          mechSystem.incramentShooter(-1);
+          //mechSystem.setShooterPower(-0.1);
         }
         else
         {
-          mechSystem.setShooterPower(0);
-        }
+          //mechSystem.setShooterPower(0);
+        }*/
 
 
         if (operatorController.getLeftBumper())
@@ -156,15 +158,15 @@ public class RobotContainer {
 
         if (operatorPOV == 270)
         {
-          mechSystem.incramentIntakeAngle(0.000001);
+          mechSystem.incramentIntakeAngle(0.001);
         }
         else if (operatorPOV == 90)
         {
-          mechSystem.incramentIntakeAngle(-0.000001);
+          mechSystem.incramentIntakeAngle(-0.001);
         }
 
 
-        if (operatorController.getLeftTriggerAxis() > 0.8)
+        /*if (operatorController.getLeftTriggerAxis() > 0.8)
         { // Set hopper power
           mechSystem.hopper.setPower(1);
         }
@@ -175,7 +177,9 @@ public class RobotContainer {
         else
         {
           mechSystem.hopper.setPower(0);
-        }
+        }*/
+
+        mechSystem.hopper.setPower(MiscUtils.clamp(-0.3, 0.3, operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()));
 
 
       } 
@@ -194,6 +198,10 @@ public class RobotContainer {
         {
           mechSystem.climber.incramentPositionLeft(-0.4);
         }
+        else
+        {
+          mechSystem.climber.incramentPositionLeft(0);
+        }
 
 
         if (operatorController.getRightY() > 0.8)
@@ -203,6 +211,10 @@ public class RobotContainer {
         else if (operatorController.getRightY() < -0.8)
         {
           mechSystem.climber.incramentPositionRight(-0.4);
+        }
+        else
+        {
+          mechSystem.climber.incramentPositionRight(0);
         }
 
 
@@ -242,6 +254,10 @@ public class RobotContainer {
         { // Toggle intake angle
           mechSystem.toggleIntakeState();
         }
+
+        // TMP - Set climbers to zero when not in double bumper mode.
+        mechSystem.climber.setClimberLeftPosition(0);
+        mechSystem.climber.setClimberRightPosition(0);
 
 
       }
