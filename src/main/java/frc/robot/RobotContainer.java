@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Autos;
 import frc.robot.StellarController.Button;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -59,53 +60,58 @@ public class RobotContainer {
 
         if (operatorPOV == 0) 
         { // Bumpers touching speaker preset
-          mechSystem.setShooterAngle(0);
+          mechSystem.setShooterAngle(ShooterConstants.speakerPresetPosition);
         }
 
 
         if (operatorPOV == 270) 
         { // Bumpers touching Amp preset
-          mechSystem.setShooterAngle(0);
+          mechSystem.setShooterAngle(ShooterConstants.ampPresetPosition);
         }
 
 
         if (operatorPOV == 180) 
         { // Aligned with chain trap shoot preset
-          mechSystem.setShooterAngle(0);
+          mechSystem.setShooterAngle(ShooterConstants.trapPresetPosition);
+        }
+
+        if (operatorPOV == 90)
+        { // Touching alliance boundry from inside alliance zone
+          mechSystem.setShooterAngle(ShooterConstants.redLinePresetPosition);
         }
 
 
-        /*if (operatorController.getLeftTriggerAxis() > 0.8)
+        if (operatorController.getRightTriggerAxis() > 0.8)
         { // Set shooter speed
-          mechSystem.setShooterSpeed(6250);
+          mechSystem.setShooterSpeed(ShooterConstants.presetRPMs);
           //mechSystem.setShooterPower(0.5);
         }
-        else if (operatorController.getRightTriggerAxis() > 0.8)
+        else if (operatorController.getLeftTriggerAxis() > 0.8)
         {
-          mechSystem.setShooterSpeed(-6250);
+          mechSystem.setShooterSpeed(-ShooterConstants.presetRPMs);
           //mechSystem.setShooterPower(-0.5);
         }
         else 
         {
           mechSystem.setShooterSpeed(0);
           //mechSystem.setShooterPower(0);
-        }*/
+        }
 
 
-        if (operatorController.getLeftBumper())
+        if (operatorController.getRightBumper())
         { // Set hopper and intake speed bindings
           mechSystem.setIntakePower(1);
-          //mechSystem.hopper.setPower(1);
+          mechSystem.hopper.setPower(0.3);
         }
-        else if (operatorController.getRightBumper())
+        else if (operatorController.getLeftBumper())
         {
           mechSystem.setIntakePower(-1);
-          //mechSystem.hopper.setPower(-1);
+          mechSystem.hopper.setPower(-0.3);
         }
         else
         {
           mechSystem.setIntakePower(0);
-          //mechSystem.setHopperPower(0);
+          mechSystem.hopper.setPower(0);
         }
 
 
@@ -142,11 +148,11 @@ public class RobotContainer {
         }*/
 
 
-        if (operatorController.getLeftBumper())
+        if (operatorController.getRightBumper())
         { // Set intake power
           mechSystem.setIntakePower(1);
         }
-        else if (operatorController.getRightBumper())
+        else if (operatorController.getLeftBumper())
         {
           mechSystem.setIntakePower(-1);
         }
@@ -179,14 +185,14 @@ public class RobotContainer {
           mechSystem.hopper.setPower(0);
         }*/
 
-        mechSystem.hopper.setPower(MiscUtils.clamp(-0.3, 0.3, operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()));
+        mechSystem.hopper.setPower(MiscUtils.clamp(-0.3, 0.3, operatorController.getRightTriggerAxis() - operatorController.getLeftTriggerAxis()));
 
 
       } 
       
 
-      else if (operatorController.getLeftTriggerAxis() > 0.8 &&
-        operatorController.getRightTriggerAxis() > 0.8)
+      else if (operatorController.getRightTriggerAxis() > 0.8 &&
+        operatorController.getLeftTriggerAxis() > 0.8)
       { // Double bumper hold is designated for climber controls
         
 
@@ -221,9 +227,10 @@ public class RobotContainer {
       } 
 
 
-      else if (operatorController.getBButton()) 
+      else if (operatorController.getBButtonPressed()) 
       { // B hold is a wildcard as of writing this comment
-        
+        mechSystem.setIntakeAngle(0.06);
+        mechSystem.intake.isExtended = true;
       } 
       
       
@@ -236,11 +243,11 @@ public class RobotContainer {
         mechSystem.setShooterPower(0);
 
 
-        if (operatorController.getLeftBumper())
+        if (operatorController.getRightBumper())
         { // Set intake power
           mechSystem.setIntakePower(1);
         }
-        else if (operatorController.getRightBumper())
+        else if (operatorController.getLeftBumper())
         {
           mechSystem.setIntakePower(-1);
         }
@@ -250,14 +257,14 @@ public class RobotContainer {
         }
 
 
-        if (operatorController.getAButtonPressed())
+        if (operatorController.getAButtonPressed() || operatorController.getAButtonReleased())
         { // Toggle intake angle
           mechSystem.toggleIntakeState();
         }
 
         // TMP - Set climbers to zero when not in double bumper mode.
-        mechSystem.climber.setClimberLeftPosition(0);
-        mechSystem.climber.setClimberRightPosition(0);
+        mechSystem.climber.setClimberLeftPosition(140);
+        mechSystem.climber.setClimberRightPosition(140);
 
 
       }

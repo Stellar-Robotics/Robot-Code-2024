@@ -26,7 +26,7 @@ public class Intake {
     private final SparkPIDController angleController;
 
     // A status variable for intake toggle functionality
-    boolean isExtended;
+    public boolean isExtended;
 
     public Intake() { // Constructor Function
 

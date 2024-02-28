@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class MechanismSubsystem extends SubsystemBase {
 
   // Define Mechanisms
-  private final Intake intake = new Intake();
+  public final Intake intake = new Intake();
   private final Shooter shooter;
   public final Climber climber = new Climber();
   public final Hopper hopper = new Hopper();

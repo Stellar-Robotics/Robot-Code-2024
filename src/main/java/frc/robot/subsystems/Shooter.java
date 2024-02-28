@@ -42,7 +42,7 @@ public class Shooter {
         shooterAngleController.restoreFactoryDefaults();
 
         // Set current
-        shooterDriveController.setSmartCurrentLimit(60);
+        shooterDriveController.setSmartCurrentLimit(40);
         shooterAngleController.setSmartCurrentLimit(30);
 
         // Get the angle controller encoder
@@ -104,7 +104,7 @@ public class Shooter {
 
     // Driver velocity control setters
     public void setDriveSpeed(double speedRPMs) { // Dividing to adjust for gearing
-        shooterDrivePIDController.setReference(speedRPMs/2.5, ControlType.kVelocity);
+        shooterDrivePIDController.setReference(speedRPMs, ControlType.kVelocity);
     }
 
     public void incramentDriveSpeed(double speedRPMs) {

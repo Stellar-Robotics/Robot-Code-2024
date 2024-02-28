@@ -162,24 +162,26 @@ public final class Constants {
     public static final int shooterDriveControllerID = 13;
     public static final int shooterAngleControllerID = 12;
 
-    // PID values for the shooter angle
+    // PID values for the shooter angle (Used for AimBot Jr)
     public static final double shooterAngleP = 0.02;
     public static final double shooterAngleI = 0;
     public static final double shooterAngleD = 0;
 
     // PID values for the shooter drive motor (velocity control)
-    public static final double shooterDriveP = 0.02;
+    public static final double shooterDriveP = 0.001;
     public static final double shooterDriveI = 0;
-    public static final double shooterDriveD = 0;
+    public static final double shooterDriveD = 0.001;
 
     // Min and Max rotational angle in encoder ticks
     public static final double shooterMaxAngle = 200;
     public static final double shooterMinAngle = 0;
 
-    public static double speakerPresetPosition = 130;
-    public static double ampPresetPosition = 140;
-    public static double redLinePresetPosition = 15;
-    public static double trapPresetPosition = 32;
+    public static double speakerPresetPosition = 130;// Ideal speed is (3800RPM)
+    public static double ampPresetPosition = 130; // Ideal speed is (1600RPM)
+    public static double redLinePresetPosition = 40; // Probably doesent work (4500RPM)
+    public static double trapPresetPosition = 50; // Ideal speed is (?RPM)
+
+    public static double presetRPMs = 4500;
   }
 
   public static class ClimberConstants {
