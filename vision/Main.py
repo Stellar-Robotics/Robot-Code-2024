@@ -35,7 +35,7 @@ def main():
 
    absolutePoseTopic = smartDashboard.getDoubleArrayTopic("robotPose").publish()
 
-   tagsToFollow = [4, 7, 11, 12, 13, 14, 15, 16]
+   tagsToFollow = [4, 5 , 7, 11, 12, 13, 14, 15, 16]
 
    frameZFilter = LinearFilter.singlePoleIIR(0.5, 0.2)
    
@@ -69,6 +69,8 @@ def main():
       
       tagToFollow = next(filter(lambda x: x.getId() in tagsToFollow, tags), None)
 
+      print(tagToFollow)
+
       # If the tag wasn't found, skip the rest of the loop
       if tagToFollow is None:
          absolutePoseTopic.set(np.array([]))
@@ -97,7 +99,7 @@ def main():
 
       #print(f"{x}, {y}, {z}, {rotation}")
       #print(f"Robot Coordinates (EUN): {robotX}, {robotY}, {robotZ}, {rotation} - Tag pose (EDN?): {x}, {y}, {z}")
-      print(frameZFilter.calculate(pose.z))
+      #print(frameZFilter.calculate(pose.z))
 
       #cv2.imshow("frame", frame)
 

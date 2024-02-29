@@ -121,6 +121,8 @@ public final class Constants {
     public static final int kOperatorControllerPort = 1;
     public static final double kDriveDeadband = 0.25;
     public static final double kRotDeadband = 0.70;
+
+    public static final double nonLinearExponent = 1.8;
   }
 
   public static final class AutoConstants {
@@ -193,7 +195,7 @@ public final class Constants {
     public static final double halfEncoderTicks = 150;
 
     public static final double climberP = 0.025;
-    public static final double climberI = 0.0001;
+    public static final double climberI = 0.0005;
     public static final double climberD = 0;
 
 

@@ -85,6 +85,10 @@ public class MechanismSubsystem extends SubsystemBase {
     shooter.setVisionAngle();
   }
 
+  public void executePreset(double position, double speed) {
+    shooter.executePreset(position, speed);
+  }
+
   // Climber
   public double[] getClimberEncoderPositions() {
     return climber.getEncoderValues();

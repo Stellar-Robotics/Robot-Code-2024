@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Autos;
@@ -57,31 +57,36 @@ public class RobotContainer {
       if (operatorController.getXButton()) 
       { // X hold is for shooter preset mode
 
+        mechSystem.setIntakeAngle(0.18);
 
         if (operatorPOV == 0) 
         { // Bumpers touching speaker preset
-          mechSystem.setShooterAngle(ShooterConstants.speakerPresetPosition);
+          //mechSystem.setShooterAngle(ShooterConstants.speakerPresetPosition);
+          mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 3800);
         }
 
 
         if (operatorPOV == 270) 
         { // Bumpers touching Amp preset
-          mechSystem.setShooterAngle(ShooterConstants.ampPresetPosition);
+          //mechSystem.setShooterAngle(ShooterConstants.ampPresetPosition);
+          mechSystem.executePreset(ShooterConstants.ampPresetPosition, 1700);
         }
 
 
         if (operatorPOV == 180) 
         { // Aligned with chain trap shoot preset
-          mechSystem.setShooterAngle(ShooterConstants.trapPresetPosition);
+          //mechSystem.setShooterAngle(ShooterConstants.trapPresetPosition);
+          mechSystem.executePreset(ShooterConstants.trapPresetPosition, 3800);
         }
 
         if (operatorPOV == 90)
         { // Touching alliance boundry from inside alliance zone
-          mechSystem.setShooterAngle(ShooterConstants.redLinePresetPosition);
+          //mechSystem.setShooterAngle(ShooterConstants.redLinePresetPosition);
+          mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 4500);
         }
 
 
-        if (operatorController.getRightTriggerAxis() > 0.8)
+        /*if (operatorController.getRightTriggerAxis() > 0.8)
         { // Set shooter speed
           mechSystem.setShooterSpeed(ShooterConstants.presetRPMs);
           //mechSystem.setShooterPower(0.5);
@@ -94,19 +99,18 @@ public class RobotContainer {
         else 
         {
           mechSystem.setShooterSpeed(0);
-          //mechSystem.setShooterPower(0);
-        }
+        }*/
 
 
         if (operatorController.getRightBumper())
         { // Set hopper and intake speed bindings
           mechSystem.setIntakePower(1);
-          mechSystem.hopper.setPower(0.3);
+          mechSystem.hopper.setPower(1);
         }
         else if (operatorController.getLeftBumper())
         {
           mechSystem.setIntakePower(-1);
-          mechSystem.hopper.setPower(-0.3);
+          mechSystem.hopper.setPower(-0.5);
         }
         else
         {
@@ -227,6 +231,11 @@ public class RobotContainer {
       } 
 
 
+      else if (operatorController.getRightStickButton()) {
+        //mechSystem.setShooterAngleWithVision();
+      }
+
+
       else if (operatorController.getBButtonPressed()) 
       { // B hold is a wildcard as of writing this comment
         mechSystem.setIntakeAngle(0.06);
@@ -240,7 +249,8 @@ public class RobotContainer {
 
         // Stop the shooter
         //mechSystem.setShooterSpeed(0);
-        mechSystem.setShooterPower(0);
+        //mechSystem.setShooterPower(0);
+        mechSystem.executePreset(0, 0);
 
 
         if (operatorController.getRightBumper())
@@ -280,14 +290,14 @@ public class RobotContainer {
         // Primairy Stellar Controller
         if (driverController.getRightCenterButton()) {
           driveSystem.driveWithAim(
-            -driverController.getLeftX(),
-            -driverController.getLeftY(),
+            MiscUtils.transformRange(-driverController.getLeftX(), 0),
+            MiscUtils.transformRange(-driverController.getLeftY(), 0),
             1, // what AprilTag to target???
             true, true);
         } else {
           driveSystem.driveWithAbsoluteAngle(
-            -driverController.getLeftX(),
-            -driverController.getLeftY(),
+            MiscUtils.transformRange(-driverController.getLeftX(), 0),
+            MiscUtils.transformRange(-driverController.getLeftY(), 0),
             driverController.getRightRotary(),
             true, true);
         }
@@ -379,6 +389,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.driveToStage(driveSystem);
+    return new RunCommand(() -> {}, driveSystem); //Autos.driveToStage(driveSystem);
   }
 }

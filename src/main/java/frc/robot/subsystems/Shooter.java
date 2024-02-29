@@ -29,7 +29,7 @@ public class Shooter {
     private final double SPEAKER_HEIGHT = 2.047; // meters
     private final double Z_OFFSET = 0.2285; // meters
 
-    private final double DEGREES_TO_ROTATIONS = 0; // TODO: THIS IS INCORRECT!! MEASURE THIS!!!
+    private final double DEGREES_TO_ROTATIONS = 3; // TODO: THIS IS INCORRECT!! MEASURE THIS!!!
 
     public Shooter(VisionSubsystem vision) {
 
@@ -125,7 +125,7 @@ public class Shooter {
     }
 
     public void setTargetAngleDegrees(double degrees) {
-        this.setTargetAngle(degrees * DEGREES_TO_ROTATIONS);
+        this.setTargetAngle((degrees - 34) * DEGREES_TO_ROTATIONS);
     }
 
     public void setVisionAngle() {
@@ -135,6 +135,11 @@ public class Shooter {
     public void incramentAngle(double rotations) {
         lastAngle = MiscUtils.clamp(ShooterConstants.shooterMinAngle, ShooterConstants.shooterMaxAngle, lastAngle + rotations);
         this.setTargetAngle(lastAngle);
+    }
+
+    public void executePreset(double position, double speed) {
+        this.setTargetAngle(position);
+        this.setDriveSpeed(speed);
     }
      
 }
