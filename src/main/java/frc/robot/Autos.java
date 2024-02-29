@@ -2,9 +2,8 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot;
 
-import frc.robot.Location;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -82,6 +81,10 @@ public final class Autos {
 
   public static Command driveToStage(DriveSubsystem drive) {
     return driveToLocationCommand(Location.STAGE, drive).andThen();
+  }
+
+  public static Command leave(DriveSubsystem drive) {
+    return driveToLocationCommand(getPose(0, 1, 0), drive);
   }
 
   public static Command driveForwardAndShoot(DriveSubsystem drive, MechanismSubsystem mechSystem) {

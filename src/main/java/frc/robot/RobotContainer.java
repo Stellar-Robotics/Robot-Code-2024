@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.commands.Autos;
 import frc.robot.StellarController.Button;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.vision.VisionPipeline;
@@ -389,6 +388,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new RunCommand(() -> {}, driveSystem); //Autos.driveToStage(driveSystem);
+    return Autos.leave(driveSystem); //Autos.driveToStage(driveSystem);
   }
 }
