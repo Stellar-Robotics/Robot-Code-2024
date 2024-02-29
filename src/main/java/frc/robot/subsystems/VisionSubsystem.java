@@ -6,16 +6,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-
-import java.util.List;
-
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
@@ -30,6 +24,11 @@ public class VisionSubsystem extends SubsystemBase {
   DoubleSubscriber rotSub;
   DoubleArraySubscriber absPoseSub;
 
+  DoubleSubscriber frameX;
+  DoubleSubscriber frameZ;
+
+  LinearFilter zFilter = LinearFilter.singlePoleIIR(0.5, 0.02);
+
   public Trajectory targetTrajectory;
 
   public VisionSubsystem() {
@@ -41,9 +40,12 @@ public class VisionSubsystem extends SubsystemBase {
         rotSub = table.getDoubleTopic("rot").subscribe(0.0);
         absPoseSub = table.getDoubleArrayTopic("robotPose").subscribe(new double[0]);
 
+        frameX = table.getDoubleTopic("frameX").subscribe(0);
+        frameZ = table.getDoubleTopic("frameZ").subscribe(0);
+
         nt.startClient4("robot");
         nt.setServer("localhost"); // where TEAM=190, 294, etc, or use inst.setServer("hostname") or similar
-        System.out.println();
+        //System.out.println();
   }
 
   /**
@@ -61,23 +63,14 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getAprilTagX(int tagId) {
-    return xSub.get();
+    //throw new Exception("Add logic for this method to return the x position of the AprilTag *in the camera frame*!");
+    return frameX.get();
   }
 
   public double getAprilTagZ(int tagId) {
-    double z = zSub.get();
-    System.out.println(z);
-    return z;
+    return zFilter.calculate(frameZ.get());
   }
 
-  public double getAprilTagRot(int tagId) {
-    //return 0;
-    return rotSub.get();
-  }
-
-  public Pose2d getPose() {
-    return new Pose2d(this.getAprilTagZ(1), this.getAprilTagX(1), new Rotation2d(this.getAprilTagRot(1)));
-  }
 
   /**
    * A method that gets the robot's absolute pose from visible AprilTags. 
@@ -92,22 +85,6 @@ public class VisionSubsystem extends SubsystemBase {
     }
     Rotation2d rot = Rotation2d.fromRadians(poseArray[2]);
     return new Pose2d(poseArray[1], poseArray[0], rot);
-  }
-
-  public void updateTrajectory() {
-    TrajectoryConfig config = new TrajectoryConfig(
-      AutoConstants.kMaxSpeedMetersPerSecond,
-      AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-      // Add kinematics to ensure max speed is actually obeyed
-      .setKinematics(DriveConstants.kDriveKinematics
-    );
-
-    this.targetTrajectory = TrajectoryGenerator.generateTrajectory(
-      this.getPose(),
-      List.of(),
-      new Pose2d(2, 0, new Rotation2d(0)),
-      config
-    );
   }
 
   /**

@@ -27,12 +27,12 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.5;
-    public static final double kMaxAngularSpeed = 3 * Math.PI; // radians per second
+    public static final double kMaxSpeedMetersPerSecond = 6.0;
+    public static final double kMaxAngularSpeed = 4 * Math.PI; // radians per second
 
-    public static final double kDirectionSlewRate = 1.2; // radians per second
-    public static final double kMagnitudeSlewRate = 1.3; // percent per second (1 = 100%)
-    public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
+    public static final double kDirectionSlewRate = 2.5; // radians per second
+    public static final double kMagnitudeSlewRate = 2.7; // percent per second (1 = 100%)
+    public static final double kRotationalSlewRate = 3.0; // percen t per second (1 = 100%)
 
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(27);
@@ -95,14 +95,14 @@ public final class Constants {
     public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
     public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.04;
+    public static final double kDrivingP = 0.05;
     public static final double kDrivingI = 0;
     public static final double kDrivingD = 0;
     public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 1;
+    public static final double kTurningP = 1.5;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningFF = 0;
@@ -113,11 +113,12 @@ public final class Constants {
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
     public static final int kDrivingMotorCurrentLimit = 50; // amps
-    public static final int kTurningMotorCurrentLimit = 20; // amps
+    public static final int kTurningMotorCurrentLimit = 25; // amps
   }
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
     public static final double kDriveDeadband = 0.25;
     public static final double kRotDeadband = 0.70;
   }
@@ -141,7 +142,60 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 5676;
   }
 
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
+  public static class IntakeConstants {
+    // Motor controller Id's
+    public static final int intakeDriveControllerId = 58;
+    public static final int intakeAngleControllerId = 54;
+
+    // PID values for the intake angle
+    public static final double intakeAngleP = 1.3;
+    public static final double intakeAngleI = 0;
+    public static final double intakeAngleD = 0;
+
+    // Min and Max rotational angles
+    public static final double intakeMaxAngle = 0.35;
+    public static final double intakeMinAngle = 0.05;
+  }
+
+  public static class ShooterConstants {
+    // Motor contrller Id's
+    public static final int shooterDriveControllerID = 13;
+    public static final int shooterAngleControllerID = 12;
+
+    // PID values for the shooter angle (Used for AimBot Jr)
+    public static final double shooterAngleP = 0.02;
+    public static final double shooterAngleI = 0;
+    public static final double shooterAngleD = 0;
+
+    // PID values for the shooter drive motor (velocity control)
+    public static final double shooterDriveP = 0.001;
+    public static final double shooterDriveI = 0;
+    public static final double shooterDriveD = 0.001;
+
+    // Min and Max rotational angle in encoder ticks
+    public static final double shooterMaxAngle = 200;
+    public static final double shooterMinAngle = 0;
+
+    public static double speakerPresetPosition = 130;// Ideal speed is (3800RPM)
+    public static double ampPresetPosition = 130; // Ideal speed is (1600RPM)
+    public static double redLinePresetPosition = 40; // Probably doesent work (4500RPM)
+    public static double trapPresetPosition = 50; // Ideal speed is (?RPM)
+
+    public static double presetRPMs = 4500;
+  }
+
+  public static class ClimberConstants {
+    // Climber motor can ID's
+    public static final int climberLeftCANID = 39;
+    public static final int climberRightCANID = 40;
+
+    public static final double maxEncoderTicks = 318;
+    public static final double halfEncoderTicks = 150;
+
+    public static final double climberP = 0.025;
+    public static final double climberI = 0.0001;
+    public static final double climberD = 0;
+
+
   }
 }

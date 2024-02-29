@@ -8,7 +8,6 @@ import frc.robot.Location;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 
 import java.util.List;
 
@@ -68,9 +67,9 @@ public final class Autos {
     );
   }
 
-  public static Command visionAuto(DriveSubsystem driveSubsystem, VisionSubsystem vision) {
+  public static Command visionAuto(DriveSubsystem driveSubsystem) {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-      vision.getPose(),
+      driveSubsystem.getPose(),
       List.of(),
       new Pose2d(2, 0, new Rotation2d(0)),
       getTrajectoryConfig()
@@ -78,7 +77,7 @@ public final class Autos {
 
     return new SwerveControllerCommand(
       trajectory,
-      vision::getPose, // Functional interface to feed supplier
+      driveSubsystem::getPose, // Functional interface to feed supplier
       DriveConstants.kDriveKinematics,
 
       // Position controllers
@@ -86,8 +85,7 @@ public final class Autos {
       new PIDController(AutoConstants.kPYController, 0, 0),
       getThetaController(),
       driveSubsystem::setModuleStates,
-      driveSubsystem,
-      vision
+      driveSubsystem
     );
   }
 
@@ -95,6 +93,7 @@ public final class Autos {
     return driveToLocationCommand(Location.STAGE, drive).andThen(new RunCommand(() -> drive.drive(0, 0, 0, false, false)));
   }
 
+  
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
