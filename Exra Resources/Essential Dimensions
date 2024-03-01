@@ -1,0 +1,35 @@
+Wall to stage: 121 inches:
+
+Speaker sticks out from wall: 36.37 inches:
+
+edge of speaker to stage: 84.63 inches:
+
+
+
+
+
+Auto Ambitious Edition:  
+    a. Start with shooter facing speaker
+    b. Shoot preloaded gamepiece into speaker - (run speaker shooting preset sequence)
+    c. extend intake (change position to 0.35)
+        A. Stop shooter
+    d. move to grab gamepiece and run intake (run intake ?% and move 2.15m)
+        A. Stop afer ? time
+    e. extend intake halfway (change position to 0.18)
+    f. drive back to speaker (move 2.15m)
+    g. shoot newly loaded gamepiece (run speaker shooting preset sequence)
+    h. move backward out of starting zone (move 3.07m)
+        A. stop shooter
+
+Main Auto:
+    Part 1 - Shoot preloaded:
+        a. execute shooter angle and speed preset
+        b. wait 3 seconds
+        c. set intake angle to (0.18)
+        d. run intake and hopper inward (3s)
+        e. retract intake - set angle to (0.06)
+    Part 2 - drive out of the line:
+        a. extend intake fully - set angle to (0.35)
+        b. run intake at ? power
+        a. run chassis out of the starting zone (2.12m)
+        d. stop intake and retract fully (power of 0, set angle to 0.06)
