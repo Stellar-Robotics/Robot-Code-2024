@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -83,6 +84,16 @@ public final class Autos {
     return driveToLocationCommand(Location.STAGE, drive).andThen();
   }
 
+
+  // Shoot preloaded gamepiece auto command
+  public static Command shootPreloaded(MechanismSubsystem mechSystem) {
+    // Start by spinning up the shooter and setting its angle (execute preset)
+    return runShooterSpeakerPreset(mechSystem)
+      .andThen(intakeAngle(0.18, mechSystem))
+      .andThen(intakePower(1, mechSystem))
+      .andThen(/*Wait 3 Seconds*/);
+  }
+
   public static Command leave(DriveSubsystem drive) {
     //return driveToLocationCommand(getPose(2.5, 0, 0), drive);
 
@@ -95,6 +106,29 @@ public final class Autos {
   public static Command resetOdometry(DriveSubsystem drive) {
     return Commands.runOnce(() -> {System.out.println("RESET"); drive.resetOdometry(getPose(0, 0, 0));}, drive);
   }
+
+
+  // Components of the relative autos
+  public static Command runShooterSpeakerPreset(MechanismSubsystem mechSystem) {
+    return Commands.runOnce(() -> { mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 3800); }, mechSystem);
+  }
+
+  public static Command intakeAngle(double angle, MechanismSubsystem mechSystem) {
+    return Commands.runOnce(() -> { mechSystem.setIntakeAngle(angle);}, mechSystem);
+  }
+
+  public static Command intakePower(double power, MechanismSubsystem mechSystem) {
+    return Commands.runOnce(() -> { mechSystem.setIntakePower(power);}, mechSystem);
+  }
+
+  public static Command hopperPower(double power, MechanismSubsystem mechSystem) {
+    return Commands.runOnce(() -> { mechSystem.hopper.setPower(power);}, mechSystem);
+  }
+
+  public static Command intakeAndHopperPower(double powerH, double powerI, MechanismSubsystem mechSystem) {
+    return Commands.runOnce(() -> { mechSystem.hopper.setPower(powerH); mechSystem.setIntakePower(powerI);}, mechSystem);
+  }
+
 
   public static Command driveForwardAndShoot(DriveSubsystem drive, MechanismSubsystem mechSystem) {
     return
