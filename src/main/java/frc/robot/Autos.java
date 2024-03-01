@@ -45,7 +45,7 @@ public final class Autos {
   }
 
   public static RunCommand getStopCommand(DriveSubsystem drive) {
-    return new RunCommand(() -> drive.drive(0, 0, 0, false, false));
+    return new RunCommand(() -> {System.out.println("STOP"); drive.drive(0, 0, 0, false, false);}, drive);
   }
 
   public static Pose2d getPose(double x, double y, double rotation) {
@@ -84,7 +84,16 @@ public final class Autos {
   }
 
   public static Command leave(DriveSubsystem drive) {
-    return driveToLocationCommand(getPose(0, 1, 0), drive);
+    //return driveToLocationCommand(getPose(2.5, 0, 0), drive);
+
+    
+    return resetOdometry(drive)
+      .andThen(driveToLocationCommand(getPose(2, 0, 0), drive))
+      .andThen(getStopCommand(drive));
+  }
+
+  public static Command resetOdometry(DriveSubsystem drive) {
+    return Commands.runOnce(() -> {System.out.println("RESET"); drive.resetOdometry(getPose(0, 0, 0));}, drive);
   }
 
   public static Command driveForwardAndShoot(DriveSubsystem drive, MechanismSubsystem mechSystem) {

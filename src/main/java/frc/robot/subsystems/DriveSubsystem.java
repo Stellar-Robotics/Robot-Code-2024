@@ -135,10 +135,10 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
-    Pose2d robotPose = vision.getRobotPose();
+    /*Pose2d robotPose = vision.getRobotPose();
     if (robotPose != null) {
       //m_odometry.addVisionMeasurement(robotPose, Timer.getFPGATimestamp());
-    }
+    }*/
 
     Pose2d pose = m_odometry.getEstimatedPosition();
     odometryPosePub.set(new double[] {pose.getTranslation().getX(), pose.getTranslation().getY(), pose.getRotation().getRadians()});
@@ -154,8 +154,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    //return m_odometry.getEstimatedPosition();
-    return vision.getRobotPose();
+    return m_odometry.getEstimatedPosition();
+    //return vision.getRobotPose();
   }
 
   /**
