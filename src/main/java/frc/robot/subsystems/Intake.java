@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
+import edu.wpi.first.wpilibj.Timer;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
@@ -27,6 +29,9 @@ public class Intake {
 
     // A status variable for intake toggle functionality
     public boolean isExtended;
+    public long startTime;
+    public Timer stopTimer = new Timer();
+    public boolean firstSpike = true;
 
     public Intake() { // Constructor Function
 
@@ -96,6 +101,10 @@ public class Intake {
     // Angle Encoder operation
     public double getAngleEncoderPos() {
         return intakeAngleEncoder.getPosition();
+    }
+
+    public double getOutputCurrent() {
+        return intakeDrive.getOutputCurrent();
     }
 
     // Angle Controller Setters

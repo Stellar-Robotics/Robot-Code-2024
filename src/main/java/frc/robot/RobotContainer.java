@@ -68,7 +68,7 @@ public class RobotContainer {
         if (operatorPOV == 270) 
         { // Bumpers touching Amp preset
           //mechSystem.setShooterAngle(ShooterConstants.ampPresetPosition);
-          mechSystem.executePreset(ShooterConstants.ampPresetPosition, 1700);
+          mechSystem.executePreset(ShooterConstants.ampPresetPosition, 1650);
         }
 
 
@@ -150,7 +150,6 @@ public class RobotContainer {
           //mechSystem.setShooterPower(0);
         }*/
 
-
         if (operatorController.getRightBumper())
         { // Set intake power
           mechSystem.setIntakePower(1);
@@ -163,7 +162,6 @@ public class RobotContainer {
         {
           mechSystem.setIntakePower(0);
         }
-
 
         if (operatorPOV == 270)
         {
@@ -231,7 +229,7 @@ public class RobotContainer {
 
 
       else if (operatorController.getRightStickButton()) {
-        //mechSystem.setShooterAngleWithVision();
+        mechSystem.setShooterAngleWithVision();
       }
 
 
@@ -251,19 +249,39 @@ public class RobotContainer {
         //mechSystem.setShooterPower(0);
         mechSystem.executePreset(0, 0);
 
-
-        if (operatorController.getRightBumper())
+        if (operatorController.getRightBumperPressed())
         { // Set intake power
           mechSystem.setIntakePower(1);
+          mechSystem.intake.startTime = System.currentTimeMillis();
         }
-        else if (operatorController.getLeftBumper())
+        
+        if (operatorController.getLeftBumperPressed())
         {
           mechSystem.setIntakePower(-1);
+          mechSystem.intake.startTime = System.currentTimeMillis();
         }
-        else
+
+        if ((System.currentTimeMillis() - mechSystem.intake.startTime > 50) && 
+            mechSystem.intake.getOutputCurrent() > 5 && 
+            mechSystem.intake.firstSpike) {
+
+          mechSystem.intake.stopTimer.restart();
+          mechSystem.intake.firstSpike = false;
+        } else if (mechSystem.intake.getOutputCurrent() < 5) {
+          mechSystem.intake.firstSpike = true;
+        }
+        
+        if (operatorController.getRightBumperReleased() || 
+            operatorController.getLeftBumperReleased() ||
+            ( mechSystem.intake.getOutputCurrent() > 5 && 
+              !mechSystem.intake.isExtended && 
+              mechSystem.intake.stopTimer.hasElapsed(0.1) &&
+              !mechSystem.intake.firstSpike))
         {
           mechSystem.setIntakePower(0);
         }
+
+        System.out.println(mechSystem.intake.getOutputCurrent());
 
 
         if (operatorController.getAButtonPressed() || operatorController.getAButtonReleased())
@@ -388,6 +406,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.leave(driveSystem); //Autos.driveToStage(driveSystem);
+    return Autos.hitAndRun(mechSystem, driveSystem); //Autos.driveToStage(driveSystem);
   }
 }

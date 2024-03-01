@@ -179,7 +179,7 @@ public final class Constants {
     public static final double shooterMinAngle = 0;
 
     public static double speakerPresetPosition = 130;// Ideal speed is (3800RPM)
-    public static double ampPresetPosition = 130; // Ideal speed is (1600RPM)
+    public static double ampPresetPosition = 170; // Ideal speed is (1600RPM)
     public static double redLinePresetPosition = 40; // Probably doesent work (4500RPM)
     public static double trapPresetPosition = 50; // Ideal speed is (?RPM)
 

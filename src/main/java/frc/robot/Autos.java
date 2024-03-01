@@ -45,8 +45,8 @@ public final class Autos {
     return thetaController;
   }
 
-  public static RunCommand getStopCommand(DriveSubsystem drive) {
-    return new RunCommand(() -> {System.out.println("STOP"); drive.drive(0, 0, 0, false, false);}, drive);
+  public static Command getStopCommand(DriveSubsystem drive) {
+    return Commands.runOnce(() -> {System.out.println("STOP"); drive.drive(0, 0, 0, false, false);}, drive);
   }
 
   public static Pose2d getPose(double x, double y, double rotation) {
@@ -90,8 +90,11 @@ public final class Autos {
     // Start by spinning up the shooter and setting its angle (execute preset)
     return runShooterSpeakerPreset(mechSystem)
       .andThen(intakeAngle(0.18, mechSystem))
-      .andThen(intakePower(1, mechSystem))
-      .andThen(/*Wait 3 Seconds*/);
+      .andThen(Commands.waitSeconds(3))
+      .andThen(intakeAndHopperPower(1, 1, mechSystem))
+      .andThen(Commands.waitSeconds(3))
+      .andThen(intakeAndHopperPower(0, 0, mechSystem))
+      .andThen(setShooterProfile(0, 0, mechSystem));
   }
 
   public static Command leave(DriveSubsystem drive) {
@@ -99,7 +102,7 @@ public final class Autos {
 
     
     return resetOdometry(drive)
-      .andThen(driveToLocationCommand(getPose(2, 0, 0), drive))
+      .andThen(driveToLocationCommand(getPose(2.2, 0, 0), drive))
       .andThen(getStopCommand(drive));
   }
 
@@ -111,6 +114,10 @@ public final class Autos {
   // Components of the relative autos
   public static Command runShooterSpeakerPreset(MechanismSubsystem mechSystem) {
     return Commands.runOnce(() -> { mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 3800); }, mechSystem);
+  }
+
+  public static Command setShooterProfile(double angle, double speed, MechanismSubsystem mechSystem) {
+    return Commands.runOnce(() -> { mechSystem.executePreset(angle, speed);}, mechSystem);
   }
 
   public static Command intakeAngle(double angle, MechanismSubsystem mechSystem) {
@@ -138,6 +145,15 @@ public final class Autos {
       .andThen(driveToLocationCommand(getPose(0, 1, 0), drive))
       .andThen(getStopCommand(drive))
       .andThen(new RunCommand(() -> {drive.driveWithAim(0, 0, 8, true, true);}, drive).repeatedly().withTimeout(4));
+  }
+
+  public static Command hitAndRun(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    return shootPreloaded(mechSystem)
+    .andThen(intakeAngle(0.35, mechSystem))
+    .andThen(intakePower(1, mechSystem))
+    .andThen(leave(drive))
+    .andThen(intakePower(0, mechSystem))
+    .andThen(intakeAngle(0.06, mechSystem));
   }
 
   private Autos() {

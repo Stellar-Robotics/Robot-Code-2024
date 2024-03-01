@@ -71,7 +71,7 @@ public class DriveSubsystem extends SubsystemBase {
   private Rotation2d targetRobotAngle = new Rotation2d(0);
 
   private final PIDController manualAnglePID = new PIDController(0.01, 0, 0);
-  private final PIDController aimBot = new PIDController(0.0005, 0, 0.00001);
+  private final PIDController aimBot = new PIDController(0.00035, 0, 0); // 0.00035
 
   DoubleArrayPublisher odometryPosePub; 
   
