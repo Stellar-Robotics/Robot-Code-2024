@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
+import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -36,7 +37,7 @@ public class Intake {
     public Intake() { // Constructor Function
 
         // Intake toggle starts in the false case
-        isExtended = false;
+        isExtended = true;
         lastAngle = 0.6;
 
         // Define Spark Motors
@@ -109,6 +110,15 @@ public class Intake {
 
     // Angle Controller Setters
     public void setTargetAngle(double angleDegrees) {
+        /* 
+        double newDown = 0; // TODO: FIX ME
+        double newMid = 0; //TODO: FIX ME
+        double newHigh = 0;
+
+        if (angleDegrees > Constants.IntakeConstants.intakeMaxAngle - 0.1) {
+            angleController.setReference(newDown, ControlType.kPosition);
+        }*/
+        
         angleController.setReference(MiscUtils.clamp(IntakeConstants.intakeMinAngle, IntakeConstants.intakeMaxAngle, angleDegrees), ControlType.kPosition);
     }
 

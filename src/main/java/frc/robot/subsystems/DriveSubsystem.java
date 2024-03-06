@@ -53,6 +53,9 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
 
+  // Drive Speed State
+  public int driveState = 1; //0 corresponds to "sneak" mode, 1 is "walk", and 2 is "sprint"
+
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
   private double m_currentTranslationDir = 0.0;
@@ -223,7 +226,17 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
+
     //System.out.println(rot);
+
+    if (driveState == 0) {
+      xSpeed = xSpeed * 0.25;
+      ySpeed = ySpeed * 0.25;
+    } else if (driveState == 1) {
+      xSpeed = xSpeed * 0.50;
+      ySpeed = ySpeed * 0.50;
+    }
+
     double xSpeedCommanded;
     double ySpeedCommanded;
 

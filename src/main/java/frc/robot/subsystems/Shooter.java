@@ -26,7 +26,8 @@ public class Shooter {
     private double lastDriveSpeed = 0;
     private double lastAngle = 0;
 
-    private final double SPEAKER_HEIGHT = 2.047; // meters
+    private final double SPEAKER_HEIGHT = 2.047;
+    private final double APRIL_TAG_TO_FLOOR = 1.45;
     private final double Z_OFFSET = 0.2285; // meters
 
     private final double DEGREES_TO_ROTATIONS = 3; // TODO: THIS IS INCORRECT!! MEASURE THIS!!!
@@ -121,6 +122,10 @@ public class Shooter {
 
     // Angle position control setters
     public void setTargetAngle(double angleRotations) {
+
+        if (Double.isNaN(angleRotations)) {
+            return;
+        }
         shooterAnglePIDController.setReference(MiscUtils.clamp(ShooterConstants.shooterMinAngle, ShooterConstants.shooterMaxAngle, angleRotations), CANSparkMax.ControlType.kPosition);
     }
 
@@ -129,7 +134,13 @@ public class Shooter {
     }
 
     public void setVisionAngle() {
-        this.setTargetAngleDegrees(Math.toDegrees(Math.atan(SPEAKER_HEIGHT / (vision.getAprilTagZ(0) - Z_OFFSET))));
+        double dSquared = Math.pow(vision.getAprilTagZ(0), 2); // Where d = distance from april tag to camera (refrenced as apriltag z)
+        double nSquared = Math.pow(this.APRIL_TAG_TO_FLOOR, 2); // self explanitory (if it wasn't already obvious)
+        double z = Math.sqrt(dSquared - nSquared); // distance from the robot to the front face of the speaker
+        double result = Math.toDegrees(Math.atan(SPEAKER_HEIGHT / (z - Z_OFFSET)));
+        System.out.println(result);
+
+        this.setTargetAngleDegrees(result);
     }
 
     public void incramentAngle(double rotations) {

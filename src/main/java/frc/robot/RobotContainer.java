@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.sql.Driver;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants.IntakeConstants;
@@ -43,8 +45,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
 
     
     mechSystem.setDefaultCommand(new RunCommand(() -> {
@@ -84,6 +84,14 @@ public class RobotContainer {
           mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 4500);
         }
 
+        if (operatorController.getRightStickButton()) {
+          mechSystem.setShooterAngleWithVision();
+        }
+
+        if (operatorController.getRightTriggerAxis() > 0.8) {
+          mechSystem.setShooterSpeed(3800);
+          mechSystem.setShooterAngleWithVision();
+        }
 
         /*if (operatorController.getRightTriggerAxis() > 0.8)
         { // Set shooter speed
@@ -225,11 +233,6 @@ public class RobotContainer {
         }
 
 
-      } 
-
-
-      else if (operatorController.getRightStickButton()) {
-        mechSystem.setShooterAngleWithVision();
       }
 
 
@@ -281,8 +284,6 @@ public class RobotContainer {
           mechSystem.setIntakePower(0);
         }
 
-        System.out.println(mechSystem.intake.getOutputCurrent());
-
 
         if (operatorController.getAButtonPressed() || operatorController.getAButtonReleased())
         { // Toggle intake angle
@@ -319,6 +320,28 @@ public class RobotContainer {
             true, true);
         }
 
+        if (driverController.getAButtonPressed())
+        {
+          if (driveSystem.driveState == 0) {
+            driveSystem.driveState = 1;
+          } else {
+            driveSystem.driveState = 0;
+          }
+        }
+
+        if (driverController.getYButtonPressed())
+        {
+          if (driveSystem.driveState == 2) {
+            driveSystem.driveState = 1;
+          } else {
+            driveSystem.driveState = 2;
+          }
+        }
+        
+        if (driverController.getLeftX() == 0 && driverController.getLeftY() == 0 && driveSystem.driveState != 1) {
+          driveSystem.driveState = 1;
+        }
+        
         // Basic Alt Controller
         /*if (altDriveController.getL1Button()) {
           driveSystem.driveWithAim(
@@ -384,21 +407,8 @@ public class RobotContainer {
     );*/
   //}
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link StellarController}), and then calling
-   * passing it to a
-   * {@link JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    new JoystickButton(driverController, Button.kA.value)
-        .whileTrue(new RunCommand(
-            () -> driveSystem.setX(),
-            driveSystem));
-  }
+
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

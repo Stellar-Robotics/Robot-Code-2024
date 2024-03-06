@@ -12,6 +12,7 @@ import frc.robot.subsystems.MechanismSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -24,6 +25,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -154,6 +156,29 @@ public final class Autos {
     .andThen(leave(drive))
     .andThen(intakePower(0, mechSystem))
     .andThen(intakeAngle(0.06, mechSystem));
+  }
+
+  public static Command waveTwo(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+
+    BooleanSupplier hitCurrentThreshold = () -> {
+      return mechSystem.intake.getOutputCurrent() > 5;
+    };
+
+    return shootPreloaded(mechSystem)
+    .andThen(intakeAngle(0.35, mechSystem))
+    .andThen(intakePower(1, mechSystem))
+    .andThen(new ParallelCommandGroup(
+      leave(drive),
+      Commands.waitSeconds(0.5)
+        .andThen(Commands.waitUntil(hitCurrentThreshold))
+        .andThen(Commands.waitSeconds(0.5))
+        .andThen(intakePower(0, mechSystem))
+        .withTimeout(8)
+    ))
+    .andThen(driveToLocationCommand(getPose(0, 0, 0), drive))
+    .andThen(getStopCommand(drive))
+    .andThen(shootPreloaded(mechSystem));
+
   }
 
   private Autos() {
