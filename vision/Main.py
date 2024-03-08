@@ -35,12 +35,17 @@ def main():
 
    absolutePoseTopic = smartDashboard.getDoubleArrayTopic("robotPose").publish()
 
-   tagsToFollow = [4, 5 , 7, 11, 12, 13, 14, 15, 16]
+   tagsToFollow = [4, 5, 7, 11, 12, 13, 14, 15, 16]
 
    frameZFilter = LinearFilter.singlePoleIIR(0.5, 0.2)
    
    # Initialize the camera
    cap = cv2.VideoCapture(0)
+
+   try:
+      cap2 = cv2.VideoCapture(1)
+   except:
+      cap2 = None
 
    # Create an AprilTag detector
    detector = apriltag.AprilTagDetector()
@@ -55,6 +60,11 @@ def main():
    while True:
       # Capture a frame from the camera
       ret, frame = cap.read()
+
+      if cap2:
+         ret2, frame2 = cap2.read()
+         if ret2:
+            frame = np.concatenate((frame, frame2), axis = 1)
 
       # if the cam read fails, break
       if not ret:

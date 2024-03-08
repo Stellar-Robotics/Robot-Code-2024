@@ -170,10 +170,9 @@ public final class Autos {
     .andThen(new ParallelCommandGroup(
       leave(drive),
       Commands.waitSeconds(0.5)
-        .andThen(Commands.waitUntil(hitCurrentThreshold))
+        .andThen(Commands.waitUntil(hitCurrentThreshold).withTimeout(5))
         .andThen(Commands.waitSeconds(0.5))
         .andThen(intakePower(0, mechSystem))
-        .withTimeout(8)
     ))
     .andThen(driveToLocationCommand(getPose(0, 0, 0), drive))
     .andThen(getStopCommand(drive))
