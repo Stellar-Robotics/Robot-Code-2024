@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.PubSub;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -57,6 +58,10 @@ public class MechanismSubsystem extends SubsystemBase {
   // Shooter Setters
   public void setShooterPower(double shooterSpeed) {
     shooter.setDrivePower(shooterSpeed);
+  }
+
+  public void setShooterAngleFromDistance(double distance) {
+    shooter.setAngleFromDistance(distance);
   }
 
   public void setShooterSpeed(double speedRPMs) {

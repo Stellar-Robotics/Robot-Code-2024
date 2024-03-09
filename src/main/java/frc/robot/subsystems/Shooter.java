@@ -137,10 +137,11 @@ public class Shooter {
         double dSquared = Math.pow(vision.getAprilTagZ(0), 2); // Where d = distance from april tag to camera (refrenced as apriltag z)
         double nSquared = Math.pow(this.APRIL_TAG_TO_FLOOR, 2); // self explanitory (if it wasn't already obvious)
         double z = Math.sqrt(dSquared - nSquared); // distance from the robot to the front face of the speaker
-        double result = Math.toDegrees(Math.atan(SPEAKER_HEIGHT / (z - Z_OFFSET)));
-        System.out.println(result);
+        this.setAngleFromDistance(z);
+    }
 
-        this.setTargetAngleDegrees(result);
+    public void setAngleFromDistance(double distance) {
+        this.setTargetAngleDegrees(Math.toDegrees(Math.atan(SPEAKER_HEIGHT / (distance - Z_OFFSET))));
     }
 
     public void incramentAngle(double rotations) {

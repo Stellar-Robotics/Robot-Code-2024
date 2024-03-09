@@ -99,6 +99,17 @@ public final class Autos {
       .andThen(setShooterProfile(0, 0, mechSystem));
   }
 
+  public static Command aimAndShootPreloadedFromDistance(double distance, MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    return rotateTowardsSpeaker(drive)
+      .andThen(aimShooterWithDistance(distance, mechSystem))
+      .andThen(intakeAngle(0.18, mechSystem))
+      .andThen(Commands.waitSeconds(3))
+      .andThen(intakeAndHopperPower(1, 1, mechSystem))
+      .andThen(Commands.waitSeconds(3))
+      .andThen(intakeAndHopperPower(0, 0, mechSystem))
+      .andThen(setShooterProfile(0, 0, mechSystem));
+  }
+
   public static Command leave(DriveSubsystem drive) {
     //return driveToLocationCommand(getPose(2.5, 0, 0), drive);
 
@@ -122,6 +133,14 @@ public final class Autos {
     return Commands.runOnce(() -> { mechSystem.executePreset(angle, speed);}, mechSystem);
   }
 
+  public static Command aimShooterWithDistance(double distance, MechanismSubsystem mechSystem) {
+    return Commands.runOnce(() -> {mechSystem.setShooterAngleFromDistance(distance);}, mechSystem);
+  }
+
+  public static Command rotateTowardsSpeaker(DriveSubsystem drive) {
+    return Commands.runOnce(() -> {drive.driveWithAim(0, 0, 8, true, true);}, drive);
+  }
+
   public static Command intakeAngle(double angle, MechanismSubsystem mechSystem) {
     return Commands.runOnce(() -> { mechSystem.setIntakeAngle(angle);}, mechSystem);
   }
@@ -137,7 +156,6 @@ public final class Autos {
   public static Command intakeAndHopperPower(double powerH, double powerI, MechanismSubsystem mechSystem) {
     return Commands.runOnce(() -> { mechSystem.hopper.setPower(powerH); mechSystem.setIntakePower(powerI);}, mechSystem);
   }
-
 
   public static Command driveForwardAndShoot(DriveSubsystem drive, MechanismSubsystem mechSystem) {
     return
@@ -157,23 +175,29 @@ public final class Autos {
     .andThen(intakePower(0, mechSystem))
     .andThen(intakeAngle(0.06, mechSystem));
   }
-
-  public static Command waveTwo(MechanismSubsystem mechSystem, DriveSubsystem drive) {
-
+  public static Command intakeWithCurrentThreshold(MechanismSubsystem mechSystem) {
     BooleanSupplier hitCurrentThreshold = () -> {
       return mechSystem.intake.getOutputCurrent() > 5;
     };
 
-    return shootPreloaded(mechSystem)
-    .andThen(intakeAngle(0.35, mechSystem))
+    return Commands.waitUntil(hitCurrentThreshold).withTimeout(5)
+      .andThen(Commands.waitSeconds(0.5))
+      .andThen(intakePower(0, mechSystem));
+  }
+
+  public static Command grabAndGoCurrentThreshold(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    return intakeAngle(0.35, mechSystem)
     .andThen(intakePower(1, mechSystem))
     .andThen(new ParallelCommandGroup(
       leave(drive),
       Commands.waitSeconds(0.5)
-        .andThen(Commands.waitUntil(hitCurrentThreshold).withTimeout(5))
-        .andThen(Commands.waitSeconds(0.5))
-        .andThen(intakePower(0, mechSystem))
-    ))
+        .andThen(intakeWithCurrentThreshold(mechSystem))
+    ));
+  }
+
+  public static Command waveTwo(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    return shootPreloaded(mechSystem)
+    .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
     .andThen(driveToLocationCommand(getPose(0, 0, 0), drive))
     .andThen(getStopCommand(drive))
     .andThen(shootPreloaded(mechSystem));
