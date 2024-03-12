@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,12 +46,14 @@ public class RobotContainer {
   private final DriveSubsystem driveSystem = new DriveSubsystem(new Pose2d(0, 0, new Rotation2d(0)), visionSystem);
   private final MechanismSubsystem mechSystem = new MechanismSubsystem(visionSystem);
 
-  NetworkTableInstance nt;
-  NetworkTable table;
-
   // The driver's controller
   StellarController driverController = new StellarController(OIConstants.kDriverControllerPort);
   XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
+  public void lightController() {
+    final Spark lightController = new Spark(0);
+    lightController.set(-0.57);
+  }
 
 
 
