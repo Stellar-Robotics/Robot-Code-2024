@@ -157,5 +157,9 @@ public class Shooter {
     public double getShooterSpeed() {
         return this.shooterDriveEncoder.getVelocity();
     }
+
+    public double getShooterTemp() {
+        return this.shooterDriveController.getMotorTemperature();
+    }
      
 }
