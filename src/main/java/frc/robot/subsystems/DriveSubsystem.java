@@ -157,8 +157,10 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
+    System.out.println(m_odometry.getEstimatedPosition());
     return m_odometry.getEstimatedPosition();
     //return vision.getRobotPose();
+    
   }
 
   /**

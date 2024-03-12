@@ -13,8 +13,14 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.StellarController.Button;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -38,9 +44,17 @@ public class RobotContainer {
   private final VisionSubsystem visionSystem = new VisionSubsystem();
   private final DriveSubsystem driveSystem = new DriveSubsystem(new Pose2d(0, 0, new Rotation2d(0)), visionSystem);
   private final MechanismSubsystem mechSystem = new MechanismSubsystem(visionSystem);
+
+  NetworkTableInstance nt;
+  NetworkTable table;
+
   // The driver's controller
   StellarController driverController = new StellarController(OIConstants.kDriverControllerPort);
   XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+
+
+
+  
 
   //PS4Controller altDriveController = new PS4Controller(3);
 
@@ -57,77 +71,8 @@ public class RobotContainer {
       // PRIMARY OPERATOR CONTROL BINDINGS
       if (operatorController.getXButton()) 
       { // X hold is for shooter preset mode
-
         mechSystem.setIntakeAngle(0.18);
-
-        if (operatorPOV == 0) 
-        { // Bumpers touching speaker preset
-          //mechSystem.setShooterAngle(ShooterConstants.speakerPresetPosition);
-          mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 3800);
-        }
-
-
-        if (operatorPOV == 270) 
-        { // Bumpers touching Amp preset
-          //mechSystem.setShooterAngle(ShooterConstants.ampPresetPosition);
-          mechSystem.executePreset(ShooterConstants.ampPresetPosition, 1650);
-        }
-
-
-        if (operatorPOV == 180) 
-        { // Aligned with chain trap shoot preset
-          //mechSystem.setShooterAngle(ShooterConstants.trapPresetPosition);
-          mechSystem.executePreset(ShooterConstants.trapPresetPosition, 3800);
-        }
-
-        if (operatorPOV == 90)
-        { // Touching alliance boundry from inside alliance zone
-          //mechSystem.setShooterAngle(ShooterConstants.redLinePresetPosition);
-          mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 4500);
-        }
-
-        if (operatorController.getRightStickButton()) {
-          mechSystem.setShooterAngleWithVision();
-        }
-
-        if (operatorController.getRightTriggerAxis() > 0.8) {
-          mechSystem.setShooterSpeed(3800);
-          mechSystem.setShooterAngleWithVision();
-        }
-
-        /*if (operatorController.getRightTriggerAxis() > 0.8)
-        { // Set shooter speed
-          mechSystem.setShooterSpeed(ShooterConstants.presetRPMs);
-          //mechSystem.setShooterPower(0.5);
-        }
-        else if (operatorController.getLeftTriggerAxis() > 0.8)
-        {
-          mechSystem.setShooterSpeed(-ShooterConstants.presetRPMs);
-          //mechSystem.setShooterPower(-0.5);
-        }
-        else 
-        {
-          mechSystem.setShooterSpeed(0);
-        }*/
-
-
-        if (operatorController.getRightBumper())
-        { // Set hopper and intake speed bindings
-          mechSystem.setIntakePower(1);
-          mechSystem.hopper.setPower(1);
-        }
-        else if (operatorController.getLeftBumper())
-        {
-          mechSystem.setIntakePower(-1);
-          mechSystem.hopper.setPower(-0.5);
-        }
-        else
-        {
-          mechSystem.setIntakePower(0);
-          mechSystem.hopper.setPower(0);
-        }
-
-
+        mechSystem.intake.isExtended = true;
       } 
       
 
@@ -254,15 +199,66 @@ public class RobotContainer {
         //mechSystem.setShooterPower(0);
         mechSystem.executePreset(0, 0);
 
+        mechSystem.hopper.setPower(0);
+
+
+
+
+        if (operatorPOV == 0) 
+        { // Bumpers touching speaker preset
+          //mechSystem.setShooterAngle(ShooterConstants.speakerPresetPosition);
+          mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 3800);
+        }
+
+
+        if (operatorPOV == 270) 
+        { // Bumpers touching Amp preset
+          //mechSystem.setShooterAngle(ShooterConstants.ampPresetPosition);
+          mechSystem.executePreset(ShooterConstants.ampPresetPosition, 1650);
+        }
+
+
+        if (operatorPOV == 180) 
+        { // Aligned with chain trap shoot preset
+          //mechSystem.setShooterAngle(ShooterConstants.trapPresetPosition);
+          mechSystem.executePreset(ShooterConstants.trapPresetPosition, 3800);
+        }
+
+        if (operatorPOV == 90)
+        { // Touching alliance boundry from inside alliance zone
+          //mechSystem.setShooterAngle(ShooterConstants.redLinePresetPosition);
+          mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 4500);
+        }
+
+
+
+        if (operatorController.getRightStickButton()) {
+          mechSystem.setShooterAngleWithVision();
+        }
+
+        if (operatorController.getRightTriggerAxis() > 0.8) {
+          mechSystem.setShooterSpeed(3800);
+          mechSystem.setShooterAngleWithVision();
+        }
+
+
+
+
+
+        // Things that once existed on the X preset
+
         if (operatorController.getRightBumperPressed())
         { // Set intake power
           mechSystem.setIntakePower(1);
+          // Set hopper if using preset
+          if (operatorPOV != -1) {mechSystem.hopper.setPower(1);} else {mechSystem.hopper.setPower(0);}
           mechSystem.intake.startTime = System.currentTimeMillis();
         }
         
         if (operatorController.getLeftBumperPressed())
         {
           mechSystem.setIntakePower(-1);
+          if (operatorPOV == -1) {mechSystem.hopper.setPower(-1);} else {mechSystem.hopper.setPower(0);}
           mechSystem.intake.startTime = System.currentTimeMillis();
         }
 
@@ -418,6 +414,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.hitAndRun(mechSystem, driveSystem); //Autos.driveToStage(driveSystem);
+    return Autos.waveTwo(mechSystem, driveSystem); //Autos.driveToStage(driveSystem);
   }
 }

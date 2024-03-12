@@ -153,5 +153,9 @@ public class Shooter {
         this.setTargetAngle(position);
         this.setDriveSpeed(speed);
     }
+
+    public double getShooterSpeed() {
+        return this.shooterDriveEncoder.getVelocity();
+    }
      
 }

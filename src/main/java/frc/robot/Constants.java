@@ -126,7 +126,7 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 0.5;
+    public static final double kMaxSpeedMetersPerSecond = 5;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
@@ -150,7 +150,7 @@ public final class Constants {
     public static final int intakeAngleControllerId = 54;
 
     // PID values for the intake angle
-    public static final double intakeAngleP = 1.3;
+    public static final double intakeAngleP = 2;
     public static final double intakeAngleI = 0;
     public static final double intakeAngleD = 0;
 

@@ -31,11 +31,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 public final class Autos {
-  public static TrajectoryConfig getTrajectoryConfig() {
+  public static TrajectoryConfig getTrajectoryConfig(boolean reversed) {
     TrajectoryConfig config = new TrajectoryConfig(
       AutoConstants.kMaxSpeedMetersPerSecond,
       AutoConstants.kMaxAccelerationMetersPerSecondSquared)
       .setKinematics(DriveConstants.kDriveKinematics);
+
+    config.setReversed(reversed);
 
     return config;
   }
@@ -55,16 +57,16 @@ public final class Autos {
     return new Pose2d(new Translation2d(x, y), new Rotation2d(rotation));
   }
 
-  public static SwerveControllerCommand driveToLocationCommand(Location location, DriveSubsystem drive) {
+  /*public static SwerveControllerCommand driveToLocationCommand(Location location, DriveSubsystem drive) {
     return driveToLocationCommand(location.pose, drive);
-  }
+  }*/
 
-  public static SwerveControllerCommand driveToLocationCommand(Pose2d targetPose, DriveSubsystem drive) {
+  public static SwerveControllerCommand driveToLocationCommand(Pose2d startPose, Pose2d targetPose, boolean reversed, DriveSubsystem drive) {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-      drive.getPose(),
+      startPose,
       List.of(),
       targetPose,
-      getTrajectoryConfig()
+      getTrajectoryConfig(reversed)
     );
 
 
@@ -82,21 +84,42 @@ public final class Autos {
     );
   }
 
-  public static Command driveToStage(DriveSubsystem drive) {
+  /*public static Command driveToStage(DriveSubsystem drive) {
     return driveToLocationCommand(Location.STAGE, drive).andThen();
-  }
+  }*/
 
 
   // Shoot preloaded gamepiece auto command
-  public static Command shootPreloaded(MechanismSubsystem mechSystem) {
+  public static Command shootPreloaded(MechanismSubsystem mechSystem, boolean dontStop) {
     // Start by spinning up the shooter and setting its angle (execute preset)
+    //BooleanSupplier upToSpeed = () -> { System.out.println(mechSystem.getShooterSpeed()); return mechSystem.getShooterSpeed() >= 3100; };
+    //BooleanSupplier intakeFlat = () -> { return mechSystem.getIntakePos() <= 0.16; };
+
+    BooleanSupplier conditions = () -> {
+
+      System.out.println(mechSystem.getShooterSpeed());
+      System.out.println(mechSystem.getIntakePos());
+
+      boolean upToSpeed = mechSystem.getShooterSpeed() >= 2500;
+      boolean intakeFlat = mechSystem.getIntakePos() <= 0.205;
+
+      if (upToSpeed && intakeFlat) {
+        return true;
+      } else {
+        return false;
+      }
+
+    };
+
+    int runAfter = dontStop ? 1:0;
+
     return runShooterSpeakerPreset(mechSystem)
       .andThen(intakeAngle(0.18, mechSystem))
-      .andThen(Commands.waitSeconds(3))
+      .andThen(Commands.waitUntil(conditions))
       .andThen(intakeAndHopperPower(1, 1, mechSystem))
-      .andThen(Commands.waitSeconds(3))
-      .andThen(intakeAndHopperPower(0, 0, mechSystem))
-      .andThen(setShooterProfile(0, 0, mechSystem));
+      .andThen(Commands.waitSeconds(1))
+      .andThen(intakeAndHopperPower(runAfter, runAfter, mechSystem))
+      .andThen(setShooterProfile(0, dontStop ? 4000 : 0, mechSystem));
   }
 
   public static Command aimAndShootPreloadedFromDistance(double distance, MechanismSubsystem mechSystem, DriveSubsystem drive) {
@@ -115,7 +138,7 @@ public final class Autos {
 
     
     return resetOdometry(drive)
-      .andThen(driveToLocationCommand(getPose(2.2, 0, 0), drive))
+      .andThen(driveToLocationCommand(getPose(0, 0, 0), getPose(1.5, 0, 0), false, drive))
       .andThen(getStopCommand(drive));
   }
 
@@ -126,7 +149,7 @@ public final class Autos {
 
   // Components of the relative autos
   public static Command runShooterSpeakerPreset(MechanismSubsystem mechSystem) {
-    return Commands.runOnce(() -> { mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 3800); }, mechSystem);
+    return Commands.runOnce(() -> { mechSystem.executePreset(ShooterConstants.speakerPresetPosition, 4000); }, mechSystem);
   }
 
   public static Command setShooterProfile(double angle, double speed, MechanismSubsystem mechSystem) {
@@ -157,7 +180,7 @@ public final class Autos {
     return Commands.runOnce(() -> { mechSystem.hopper.setPower(powerH); mechSystem.setIntakePower(powerI);}, mechSystem);
   }
 
-  public static Command driveForwardAndShoot(DriveSubsystem drive, MechanismSubsystem mechSystem) {
+  /*public static Command driveForwardAndShoot(DriveSubsystem drive, MechanismSubsystem mechSystem) {
     return
       new RunCommand(() -> {
         mechSystem.setShooterPower(1);
@@ -165,10 +188,10 @@ public final class Autos {
       .andThen(driveToLocationCommand(getPose(0, 1, 0), drive))
       .andThen(getStopCommand(drive))
       .andThen(new RunCommand(() -> {drive.driveWithAim(0, 0, 8, true, true);}, drive).repeatedly().withTimeout(4));
-  }
+  }*/
 
   public static Command hitAndRun(MechanismSubsystem mechSystem, DriveSubsystem drive) {
-    return shootPreloaded(mechSystem)
+    return shootPreloaded(mechSystem, false)
     .andThen(intakeAngle(0.35, mechSystem))
     .andThen(intakePower(1, mechSystem))
     .andThen(leave(drive))
@@ -181,8 +204,9 @@ public final class Autos {
     };
 
     return Commands.waitUntil(hitCurrentThreshold).withTimeout(5)
-      .andThen(Commands.waitSeconds(0.5))
-      .andThen(intakePower(0, mechSystem));
+      .andThen(Commands.waitSeconds(0.2))
+      .andThen(intakePower(0, mechSystem))
+      .andThen(intakeAngle(0.16, mechSystem));
   }
 
   public static Command grabAndGoCurrentThreshold(MechanismSubsystem mechSystem, DriveSubsystem drive) {
@@ -196,11 +220,27 @@ public final class Autos {
   }
 
   public static Command waveTwo(MechanismSubsystem mechSystem, DriveSubsystem drive) {
-    return shootPreloaded(mechSystem)
+    return shootPreloaded(mechSystem, true)
     .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
-    .andThen(driveToLocationCommand(getPose(0, 0, 0), drive))
+    .andThen(runShooterSpeakerPreset(mechSystem))
+    .andThen(new ParallelCommandGroup (
+      driveToLocationCommand(getPose(2.2, 0, 0), getPose(0, 0, 0), true, drive),
+      Commands.waitSeconds(0.5)
+      .andThen(intakeAngle(0.16, mechSystem))
+    ))
+    //.andThen(driveToLocationCommand(getPose(2.2, 0, 0), getPose(0, 0, 0), true, drive))
     .andThen(getStopCommand(drive))
-    .andThen(shootPreloaded(mechSystem));
+    .andThen(shootPreloaded(mechSystem, false));
+
+  }
+
+  public static Command waveTwoPointFive(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    return shootPreloaded(mechSystem, true)
+    .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
+    .andThen(runShooterSpeakerPreset(mechSystem))
+    .andThen(driveToLocationCommand(getPose(2.2, 0, 0), getPose(0, 0, 0), true, drive))
+    .andThen(getStopCommand(drive))
+    .andThen(shootPreloaded(mechSystem, false));
 
   }
 

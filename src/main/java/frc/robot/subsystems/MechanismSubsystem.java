@@ -54,6 +54,10 @@ public class MechanismSubsystem extends SubsystemBase {
     intake.incramentAngle(rotations);
   }
 
+  public double getIntakePos() {
+    return intake.getAngleEncoderPos();
+  }
+
 
   // Shooter Setters
   public void setShooterPower(double shooterSpeed) {
@@ -92,6 +96,10 @@ public class MechanismSubsystem extends SubsystemBase {
 
   public void executePreset(double position, double speed) {
     shooter.executePreset(position, speed);
+  }
+
+  public double getShooterSpeed() {
+    return shooter.getShooterSpeed();
   }
 
   // Climber
