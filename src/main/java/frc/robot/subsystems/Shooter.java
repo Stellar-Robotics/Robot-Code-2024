@@ -6,7 +6,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import frc.robot.subsystems.VisionSubsystem;
-
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.utils.MiscUtils;
 
@@ -27,8 +27,10 @@ public class Shooter {
     private double lastAngle = 0;
 
     private final double SPEAKER_HEIGHT = 2.047;
+    private final double HEIGHT_OFFSET = 0.23;
     private final double APRIL_TAG_TO_FLOOR = 1.45;
-    private final double Z_OFFSET = 0.2285; // meters
+    private final double CAMERA_TO_FLOOR = 0.37;
+    private final double Z_OFFSET = 0.5; // meters
 
     private final double DEGREES_TO_ROTATIONS = 3; // TODO: THIS IS INCORRECT!! MEASURE THIS!!!
 
@@ -135,16 +137,16 @@ public class Shooter {
 
     public void setVisionAngle() {
         double dSquared = Math.pow(vision.getAprilTagZ(0), 2); // Where d = distance from april tag to camera (refrenced as apriltag z)
-        double nSquared = Math.pow(this.APRIL_TAG_TO_FLOOR, 2); // self explanitory (if it wasn't already obvious)
+        double nSquared = Math.pow(this.APRIL_TAG_TO_FLOOR - this.CAMERA_TO_FLOOR, 2); // self explanatory (if it wasn't already obvious)
         double z = Math.sqrt(dSquared - nSquared); // distance from the robot to the front face of the speaker
         this.setAngleFromDistance(z);
     }
 
     public void setAngleFromDistance(double distance) {
-        this.setTargetAngleDegrees(Math.toDegrees(Math.atan(SPEAKER_HEIGHT / (distance - Z_OFFSET))));
+        this.setTargetAngleDegrees(Math.toDegrees(Math.atan((SPEAKER_HEIGHT - HEIGHT_OFFSET) / (distance - Z_OFFSET))));
     }
 
-    public void incramentAngle(double rotations) {
+    public void incrementAngle(double rotations) {
         lastAngle = MiscUtils.clamp(ShooterConstants.shooterMinAngle, ShooterConstants.shooterMaxAngle, lastAngle + rotations);
         this.setTargetAngle(lastAngle);
     }

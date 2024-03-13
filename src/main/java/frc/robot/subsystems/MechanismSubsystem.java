@@ -77,7 +77,7 @@ public class MechanismSubsystem extends SubsystemBase {
   }
 
   public void incramentShooterAngle(double rotations) {
-    shooter.incramentAngle(rotations);
+    shooter.incrementAngle(rotations);
   }
 
 

@@ -243,7 +243,13 @@ public class RobotContainer {
 
 
 
-
+        if (operatorController.getRightBumper()) {
+          mechSystem.hopper.setPower(1);
+        } else if (operatorController.getLeftBumper()) {
+          mechSystem.hopper.setPower(-1);
+        } else {
+          mechSystem.hopper.setPower(0);
+        }
 
         // Things that once existed on the X preset
 
@@ -251,7 +257,6 @@ public class RobotContainer {
         { // Set intake power
           mechSystem.setIntakePower(1);
           // Set hopper if using preset
-          if (operatorPOV != -1) {mechSystem.hopper.setPower(1);} else {mechSystem.hopper.setPower(0);}
           mechSystem.intake.startTime = System.currentTimeMillis();
         }
         
