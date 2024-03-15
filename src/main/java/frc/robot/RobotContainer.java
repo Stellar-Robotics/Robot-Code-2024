@@ -45,6 +45,7 @@ public class RobotContainer {
   private final VisionSubsystem visionSystem = new VisionSubsystem();
   private final DriveSubsystem driveSystem = new DriveSubsystem(new Pose2d(0, 0, new Rotation2d(0)), visionSystem);
   private final MechanismSubsystem mechSystem = new MechanismSubsystem(visionSystem);
+  private double angleOffset = 0;
 
   // The driver's controller
   StellarController driverController = new StellarController(OIConstants.kDriverControllerPort);
@@ -319,11 +320,19 @@ public class RobotContainer {
             1, // what AprilTag to target???
             true, true);
         } else {
+          double wrappedAngle = driverController.getRightRotary().getDegrees() - angleOffset;
+          if (wrappedAngle < 0) {
+            wrappedAngle += 360;
+          }
           driveSystem.driveWithAbsoluteAngle(
             MiscUtils.transformRange(-driverController.getLeftX(), 0),
             MiscUtils.transformRange(-driverController.getLeftY(), 0),
-            driverController.getRightRotary(),
+            new Rotation2d(wrappedAngle),
             true, true);
+        }
+
+        if (driverController.getRightCenterButtonReleased()) {
+          angleOffset = driverController.getRightRotary().getDegrees() - 9*Math.round((driveSystem.getHeading() + 180)/9);
         }
 
         if (driverController.getAButtonPressed())
