@@ -122,6 +122,7 @@ public final class Autos {
       .andThen(Commands.waitSeconds(1))
       .andThen(intakeAndHopperPower(runAfter, runAfter, mechSystem))
       .andThen(setShooterProfile(0, dontStop ? 4000 : 0, mechSystem));
+      
   }
 
   public static Command aimAndShootPreloadedFromDistance(double distance, MechanismSubsystem mechSystem, DriveSubsystem drive) {

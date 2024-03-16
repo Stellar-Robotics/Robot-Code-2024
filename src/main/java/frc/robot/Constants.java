@@ -171,8 +171,9 @@ public final class Constants {
 
     // PID values for the shooter drive motor (velocity control)
     public static final double shooterDriveP = 0.001;
-    public static final double shooterDriveI = 0;
+    public static final double shooterDriveI = 0.000001;
     public static final double shooterDriveD = 0.001;
+    public static final double shooterDriveIZone = 1000;
 
     // Min and Max rotational angle in encoder ticks
     public static final double shooterMaxAngle = 200;

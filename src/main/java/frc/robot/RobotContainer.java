@@ -320,20 +320,20 @@ public class RobotContainer {
             1, // what AprilTag to target???
             true, true);
         } else {
-          double wrappedAngle = driverController.getRightRotary().getDegrees() - angleOffset;
+          /*double wrappedAngle = driverController.getRightRotary().getDegrees() - angleOffset;
           if (wrappedAngle < 0) {
             wrappedAngle += 360;
-          }
+          }*/
           driveSystem.driveWithAbsoluteAngle(
             MiscUtils.transformRange(-driverController.getLeftX(), 0),
             MiscUtils.transformRange(-driverController.getLeftY(), 0),
-            new Rotation2d(wrappedAngle),
+            driverController.getRightRotary(),
             true, true);
         }
 
-        if (driverController.getRightCenterButtonReleased()) {
+        /*if (driverController.getRightCenterButtonReleased()) {
           angleOffset = driverController.getRightRotary().getDegrees() - 9*Math.round((driveSystem.getHeading() + 180)/9);
-        }
+        }*/
 
         if (driverController.getAButtonPressed())
         {

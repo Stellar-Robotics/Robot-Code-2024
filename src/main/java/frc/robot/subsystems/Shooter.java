@@ -4,6 +4,12 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.Constants;
@@ -27,14 +33,34 @@ public class Shooter {
     private double lastAngle = 0;
 
     private final double SPEAKER_HEIGHT = 2.047;
-    private final double HEIGHT_OFFSET = 0.23;
+    private final double HEIGHT_OFFSET = 0;
+    
     private final double APRIL_TAG_TO_FLOOR = 1.45;
     private final double CAMERA_TO_FLOOR = 0.37;
-    private final double Z_OFFSET = 0.5; // meters
+    private final double Z_OFFSET = 0.25; // meters
 
-    private final double DEGREES_TO_ROTATIONS = 3; // TODO: THIS IS INCORRECT!! MEASURE THIS!!!
+    private final double ANGLE_OFFSET = 7.5;
+
+    private final double DEGREES_TO_ROTATIONS = 3;
+
+    NetworkTableInstance nt;
+    NetworkTable table;
+
+    public DoublePublisher anglePub;
+    public DoublePublisher speedPub;
 
     public Shooter(VisionSubsystem vision) {
+
+    
+
+        nt = NetworkTableInstance.getDefault();
+        table = nt.getTable("SmartDashboard");
+
+        anglePub = table.getDoubleTopic("shooterAngle2").publish();
+        speedPub = table.getDoubleTopic("shooterSpeed").publish();
+
+        anglePub.set(0);
+        speedPub.set(0);
 
         // Define Motors
         shooterDriveController = new CANSparkMax(ShooterConstants.shooterDriveControllerID, MotorType.kBrushless);
@@ -64,6 +90,7 @@ public class Shooter {
         shooterDrivePIDController.setP(ShooterConstants.shooterDriveP);
         shooterDrivePIDController.setI(ShooterConstants.shooterDriveI);
         shooterDrivePIDController.setD(ShooterConstants.shooterDriveD);
+        shooterDrivePIDController.setIZone(ShooterConstants.shooterDriveIZone);
 
         // Set PID Feedback Device
         shooterAnglePIDController.setFeedbackDevice(shooterAngleEncoder);
@@ -143,7 +170,12 @@ public class Shooter {
     }
 
     public void setAngleFromDistance(double distance) {
-        this.setTargetAngleDegrees(Math.toDegrees(Math.atan((SPEAKER_HEIGHT - HEIGHT_OFFSET) / (distance - Z_OFFSET))));
+        double angle = Math.toDegrees(Math.atan2(SPEAKER_HEIGHT - CAMERA_TO_FLOOR + HEIGHT_OFFSET, distance - Z_OFFSET)) + ANGLE_OFFSET;
+        
+        anglePub.set(angle);
+        speedPub.set(shooterDriveEncoder.getVelocity());
+
+        this.setTargetAngleDegrees(angle);
     }
 
     public void incrementAngle(double rotations) {
