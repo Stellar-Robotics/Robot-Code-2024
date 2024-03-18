@@ -311,8 +311,12 @@ public class RobotContainer {
     // otherwise respond to driver inputs to control angle.
     driveSystem.setDefaultCommand(
       new RunCommand(() -> {
+        
+         // Primary Stellar Controller
+        if (driverController.getRightCenterButtonReleased()) {
+          angleOffset = driverController.getRightRotary().getDegrees() - 9*Math.round((driveSystem.getHeading() + 180)/9);
+        }
 
-        // Primairy Stellar Controller
         if (driverController.getRightCenterButton()) {
           driveSystem.driveWithAim(
             MiscUtils.transformRange(-driverController.getLeftX(), 0),
@@ -330,10 +334,6 @@ public class RobotContainer {
             driverController.getRightRotary(),
             true, true);
         }
-
-        /*if (driverController.getRightCenterButtonReleased()) {
-          angleOffset = driverController.getRightRotary().getDegrees() - 9*Math.round((driveSystem.getHeading() + 180)/9);
-        }*/
 
         if (driverController.getAButtonPressed())
         {
