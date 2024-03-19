@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public final class Autos {
   public static TrajectoryConfig getTrajectoryConfig(boolean reversed) {
@@ -102,7 +103,7 @@ public final class Autos {
       System.out.println(mechSystem.getShooterSpeed());
       System.out.println(mechSystem.getIntakePos());
 
-      boolean upToSpeed = mechSystem.getShooterSpeed() >= 2500;
+      boolean upToSpeed = mechSystem.getShooterSpeed() >= 3800;
       boolean intakeFlat = mechSystem.getIntakePos() <= 0.205;
 
       if (upToSpeed && intakeFlat) {
@@ -122,16 +123,33 @@ public final class Autos {
       .andThen(Commands.waitSeconds(1))
       .andThen(intakeAndHopperPower(runAfter, runAfter, mechSystem))
       .andThen(setShooterProfile(0, dontStop ? 4000 : 0, mechSystem));
-      
+
   }
 
   public static Command aimAndShootPreloadedFromDistance(double distance, MechanismSubsystem mechSystem, DriveSubsystem drive) {
+
+        BooleanSupplier conditions = () -> {
+
+      System.out.println(mechSystem.getShooterSpeed());
+      System.out.println(mechSystem.getIntakePos());
+
+      boolean upToSpeed = mechSystem.getShooterSpeed() >= 3800;
+      boolean intakeFlat = mechSystem.getIntakePos() <= 0.205;
+
+      if (upToSpeed && intakeFlat) {
+        return true;
+      } else {
+        return false;
+      }
+
+    };
+
     return rotateTowardsSpeaker(drive)
       .andThen(aimShooterWithDistance(distance, mechSystem))
-      .andThen(intakeAngle(0.18, mechSystem))
-      .andThen(Commands.waitSeconds(3))
+      .andThen(intakeAngle(0.16, mechSystem))
+      .andThen(Commands.waitUntil(conditions))
       .andThen(intakeAndHopperPower(1, 1, mechSystem))
-      .andThen(Commands.waitSeconds(3))
+      .andThen(Commands.waitSeconds(1))
       .andThen(intakeAndHopperPower(0, 0, mechSystem))
       .andThen(setShooterProfile(0, 0, mechSystem));
   }
@@ -246,6 +264,47 @@ public final class Autos {
     .andThen(shootPreloaded(mechSystem, false));
 
   }
+
+
+  // Two piece auto configurations
+    public static Command twoPieceLeft(MechanismSubsystem mechSystem, DriveSubsystem drive) 
+    { // Shoots preloaded piece next to the left game piece, the picks up and shoots the other piece
+    return shootPreloaded(mechSystem, true)
+    .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
+    .andThen(new ParallelCommandGroup (
+    driveToLocationCommand(getPose(2.2, 0, 0), getPose(1, -1, 320), true, drive),
+    intakeAngle(0.16, mechSystem)
+    ))
+    .andThen(aimAndShootPreloadedFromDistance(1, mechSystem, drive))
+    .andThen(getStopCommand(drive))
+    .andThen(shootPreloaded(mechSystem, false));
+  }
+
+    public static Command twoPieceCenter(MechanismSubsystem mechSystem, DriveSubsystem drive) 
+    { // Shoots pre-loaded game piece touching speaker, grabs piece behind it, and shoots
+    return shootPreloaded(mechSystem, true)
+    .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
+    .andThen(aimAndShootPreloadedFromDistance(2.6, mechSystem, drive))
+    .andThen(intakeAngle(0.16, mechSystem))
+    //.andThen(driveToLocationCommand(getPose(2.2, 0, 0), getPose(0, 0, 0), true, drive))
+    .andThen(getStopCommand(drive));
+  }
+
+    public static Command twoPieceRight(MechanismSubsystem mechSystem, DriveSubsystem drive) 
+    { // Does the same thing as left, but its mirrored
+    return shootPreloaded(mechSystem, true)
+    .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
+    .andThen(new ParallelCommandGroup (
+    driveToLocationCommand(getPose(2.2, 0, 0), getPose(1, 1, 30), true, drive),
+    intakeAngle(0.16, mechSystem)
+    ))
+    .andThen(aimAndShootPreloadedFromDistance(1, mechSystem, drive))
+    .andThen(getStopCommand(drive))
+    .andThen(shootPreloaded(mechSystem, false));
+  }
+
+
+
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");

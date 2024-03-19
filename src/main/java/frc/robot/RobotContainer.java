@@ -52,10 +52,9 @@ public class RobotContainer {
   XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
   public void lightController() {
-    final Spark lightController = new Spark(0);
+    final Spark lightController = new Spark(9);
     lightController.set(-0.57);
   }
-
 
 
   
@@ -431,6 +430,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.waveTwo(mechSystem, driveSystem); //Autos.driveToStage(driveSystem);
+    return Autos.twoPieceCenter(mechSystem, driveSystem); //Autos.driveToStage(driveSystem);
   }
 }
