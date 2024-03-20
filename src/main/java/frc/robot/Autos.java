@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -98,10 +99,15 @@ public final class Autos {
     //BooleanSupplier upToSpeed = () -> { System.out.println(mechSystem.getShooterSpeed()); return mechSystem.getShooterSpeed() >= 3100; };
     //BooleanSupplier intakeFlat = () -> { return mechSystem.getIntakePos() <= 0.16; };
 
+    return runShooterSpeakerPreset(mechSystem).andThen(shoot(dontStop, mechSystem));
+
+  }
+
+  public static Command shoot(boolean dontStop, MechanismSubsystem mechSystem) {
     BooleanSupplier conditions = () -> {
 
-      System.out.println(mechSystem.getShooterSpeed());
-      System.out.println(mechSystem.getIntakePos());
+      //System.out.println("Hello, World!");
+      //System.out.println(mechSystem.getIntakePos());
 
       boolean upToSpeed = mechSystem.getShooterSpeed() >= 3800;
       boolean intakeFlat = mechSystem.getIntakePos() <= 0.205;
@@ -114,16 +120,12 @@ public final class Autos {
 
     };
 
-    int runAfter = dontStop ? 1:0;
-
-    return runShooterSpeakerPreset(mechSystem)
-      .andThen(intakeAngle(0.18, mechSystem))
+    return intakeAngle(0.18, mechSystem)
       .andThen(Commands.waitUntil(conditions))
       .andThen(intakeAndHopperPower(1, 1, mechSystem))
       .andThen(Commands.waitSeconds(1))
-      .andThen(intakeAndHopperPower(runAfter, runAfter, mechSystem))
+      .andThen(intakeAndHopperPower(0, 0, mechSystem))
       .andThen(setShooterProfile(0, dontStop ? 4000 : 0, mechSystem));
-
   }
 
   public static Command aimAndShootPreloadedFromDistance(double distance, MechanismSubsystem mechSystem, DriveSubsystem drive) {
@@ -179,6 +181,10 @@ public final class Autos {
 
   public static Command aimShooterWithDistance(double distance, MechanismSubsystem mechSystem) {
     return Commands.runOnce(() -> {mechSystem.setShooterAngleFromDistance(distance);}, mechSystem);
+  }
+
+  public static Command aimShooterWithVision(MechanismSubsystem mechSystem) {
+    return Commands.runOnce(() -> {mechSystem.setShooterAngleWithVision();}, mechSystem);
   }
 
   public static Command rotateTowardsSpeaker(DriveSubsystem drive) {
@@ -272,12 +278,12 @@ public final class Autos {
     return shootPreloaded(mechSystem, true)
     .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
     .andThen(new ParallelCommandGroup (
-    driveToLocationCommand(getPose(2.2, 0, 0), getPose(1, -1, 320), true, drive),
-    intakeAngle(0.16, mechSystem)
+      driveToLocationCommand(getPose(2.2, 0, 0), getPose(1, -1, 320), true, drive),
+      intakeAngle(0.16, mechSystem)
     ))
-    .andThen(aimAndShootPreloadedFromDistance(1, mechSystem, drive))
+    .andThen(aimShooterWithVision(mechSystem))
     .andThen(getStopCommand(drive))
-    .andThen(shootPreloaded(mechSystem, false));
+    .andThen(shoot(false, mechSystem));
   }
 
     public static Command twoPieceCenter(MechanismSubsystem mechSystem, DriveSubsystem drive) 
@@ -293,17 +299,82 @@ public final class Autos {
     public static Command twoPieceRight(MechanismSubsystem mechSystem, DriveSubsystem drive) 
     { // Does the same thing as left, but its mirrored
     return shootPreloaded(mechSystem, true)
-    .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
-    .andThen(new ParallelCommandGroup (
-    driveToLocationCommand(getPose(2.2, 0, 0), getPose(1, 1, 30), true, drive),
-    intakeAngle(0.16, mechSystem)
-    ))
-    .andThen(aimAndShootPreloadedFromDistance(1, mechSystem, drive))
-    .andThen(getStopCommand(drive))
-    .andThen(shootPreloaded(mechSystem, false));
+      .andThen(grabAndGoCurrentThreshold(mechSystem, drive))
+      .andThen(new ParallelCommandGroup (
+        driveToLocationCommand(getPose(2.2, 0, 0), 
+        getPose(1, 1, 30), true, drive),
+        intakeAngle(0.16, mechSystem)
+      ))
+      .andThen(aimShooterWithVision(mechSystem))
+      .andThen(getStopCommand(drive))
+      .andThen(shoot(false, mechSystem));
   }
 
+  public static Command turnLeftAndCheck(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    BooleanSupplier tagIsVisible = () -> {
+      return mechSystem.vision.getRobotPose() != null;
+    };
 
+    return driveToLocationCommand(getPose(2.2, 0, 0), 
+      getPose(2.2, 0, 45), false, drive)
+      .andThen(new ConditionalCommand(aimAndShootWithVision(mechSystem, drive), 
+      getStopCommand(drive), tagIsVisible));
+  }
+
+  public static Command turnRightAndCheck(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    BooleanSupplier tagIsVisible = () -> {
+      return mechSystem.vision.getRobotPose() != null;
+    };
+
+    return driveToLocationCommand(getPose(2.2, 0, 45),
+      getPose(2.2, 0, 315), false, drive)
+      .andThen(new ConditionalCommand(aimAndShootWithVision(mechSystem, drive),
+      turnLeftAndCheck(mechSystem, drive), tagIsVisible));
+  }
+
+  public static Command drewPiece(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    BooleanSupplier tagIsVisible = () -> {
+      //return mechSystem.vision.getRobotPose() != null;
+      return mechSystem.vision.getAprilTagX(0) != 300;
+      //return true;
+    };
+
+    return 
+      setShooterProfile(0, 4000, mechSystem)
+      .andThen(driveToLocationCommand(getPose(0, 0, 0), 
+        getPose(0.6, 0, 0), false, drive))
+      .andThen(getStopCommand(drive))
+      //.andThen(Commands.waitSeconds(1))
+      .andThen(Commands.runOnce(() -> drive.drive(0, 0, 0.05, false, false)).repeatedly().until(tagIsVisible))
+      .andThen(aimAndShootWithVision(mechSystem, drive))
+      .andThen(Commands.runOnce(() -> drive.drive(0, 0, 0, false, false)).repeatedly().withTimeout(2))
+      .andThen(getStopCommand(drive))
+      //.andThen(grabAndGoCurrentThreshold(mechSystem, drive))
+      .andThen(intakeAngle(0.35, mechSystem))
+      .andThen(intakePower(1, mechSystem))
+      .andThen(
+        new ParallelCommandGroup(
+          driveToLocationCommand(getPose(0.6, 0, 0), getPose(1, 0, 0), false, drive),
+          Commands.waitSeconds(0.5).andThen(intakeWithCurrentThreshold(mechSystem))
+        )
+      )
+      .andThen(getStopCommand(drive))
+      .andThen(aimAndShootWithVision(mechSystem, drive))
+      .andThen(setShooterProfile(0, 0, mechSystem));
+  }
+
+  public static Command aimAndShootWithVision(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    return getStopCommand(drive)
+    .andThen(
+      new ParallelCommandGroup(
+        rotateTowardsSpeaker(drive).repeatedly().until(() -> Math.abs(mechSystem.vision.getAprilTagX(0) - 300) < 20),
+        Commands.runOnce(() -> mechSystem.setShooterAngleWithVision(), mechSystem).repeatedly().withTimeout(2)
+      )
+    )
+    .andThen(getStopCommand(drive))
+    .andThen(shoot(true, mechSystem))
+    .andThen(intakeAngle(0.16, mechSystem));
+  }
 
 
   private Autos() {

@@ -61,10 +61,10 @@ def main():
       # Capture a frame from the camera
       ret, frame = cap.read()
 
-      if cap2:
-         ret2, frame2 = cap2.read()
-         if ret2:
-            frame = np.concatenate((frame, frame2), axis = 1)
+      #if cap2:
+      #   ret2, frame2 = cap2.read()
+      #   if ret2:
+      #      frame = np.concatenate((frame, frame2), axis = 1)
 
       # if the cam read fails, break
       if not ret:
@@ -90,19 +90,19 @@ def main():
       
       pose = estimator.estimate(tagToFollow)
 
-      x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
+      #x, y, z, rotation = pose.X(), pose.Y(), pose.Z(), pose.rotation().Z()
 
-      robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
-      robotX, robotZ, robotRotation = robotPose.X(),robotPose.Z(),robotPose.rotation().Z()
+      #robotPose = calculateAbsoluteRobotPose(fieldLayout=fieldLayout,tagPose=pose,tagId=16)
+      #robotX, robotZ, robotRotation = robotPose.X(),robotPose.Z(),robotPose.rotation().Z()
       # Get the Y from NWU since the normal coordinate system is EDN
-      robotY = CoordinateSystem.convert(robotPose, CoordinateSystem.EDN(), CoordinateSystem.NWU()).Y() 
+      #robotY = CoordinateSystem.convert(robotPose, CoordinateSystem.EDN(), CoordinateSystem.NWU()).Y() 
 
-      robotPoseArray = np.array([robotX,robotZ,robotRotation])
+      #robotPoseArray = np.array([robotX,robotZ,robotRotation])
 
-      xTopic.set(x)
-      zTopic.set(z)
-      rotTopic.set(rotation)
-      absolutePoseTopic.set(robotPoseArray)
+      #xTopic.set(x)
+      #zTopic.set(z)
+      #rotTopic.set(rotation)
+      #absolutePoseTopic.set(robotPoseArray)
 
       frameXTopic.set(tagToFollow.getCenter().x)
       frameZTopic.set(pose.z)
@@ -113,7 +113,7 @@ def main():
 
       #cv2.imshow("frame", frame)
 
-      time.sleep(0.1)
+      #time.sleep(0.1)
       #cv2.waitKey(100)
 
       #piTable.putValue("rotation", rotation)

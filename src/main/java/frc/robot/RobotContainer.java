@@ -430,6 +430,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.twoPieceCenter(mechSystem, driveSystem); //Autos.driveToStage(driveSystem);
+    return Autos.drewPiece(mechSystem, driveSystem); //Autos.driveToStage(driveSystem);
   }
 }

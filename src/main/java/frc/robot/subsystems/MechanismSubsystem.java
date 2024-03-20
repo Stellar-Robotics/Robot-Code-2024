@@ -12,7 +12,7 @@ public class MechanismSubsystem extends SubsystemBase {
 
   // Define Mechanisms
   public final Intake intake = new Intake();
-  private final Shooter shooter;
+  public final Shooter shooter;
   public final Climber climber = new Climber();
   public final Hopper hopper = new Hopper();
 
@@ -79,8 +79,6 @@ public class MechanismSubsystem extends SubsystemBase {
   public void incramentShooterAngle(double rotations) {
     shooter.incrementAngle(rotations);
   }
-
-
 
   public void stopShooter() {
     shooter.resetDriveSpeed();

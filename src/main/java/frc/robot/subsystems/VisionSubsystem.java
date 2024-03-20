@@ -26,6 +26,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   DoubleSubscriber frameX;
   DoubleSubscriber frameZ;
+  
 
   LinearFilter zFilter = LinearFilter.singlePoleIIR(0.5, 0.02);
 
