@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.MechanismSubsystem;
@@ -56,6 +57,13 @@ public class RobotContainer {
     lightController.set(-0.57);
   }
 
+    // Auto selector
+  final String kDefaultAuto = "Default";
+  final String kTwoPieceAuto = "TwoPieceCenter";
+  final String kLeaveAuto = "Leave";
+
+  final SendableChooser<String> m_chooser = new SendableChooser<>();
+
 
   
 
@@ -65,6 +73,15 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+    // Auto Switcher
+    m_chooser.setDefaultOption("anDrew-Piece", kDefaultAuto);
+    m_chooser.addOption("Two-Piece Center", kTwoPieceAuto);
+    m_chooser.addOption("Leave Only", kLeaveAuto);
+
+    SmartDashboard.putData("Auto Selector", m_chooser);
+
+
 
     mechSystem.setDefaultCommand(new RunCommand(() -> {
       // Create a quick refrence to the operator POV HAT.
@@ -430,6 +447,13 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Autos.drewPiece(mechSystem, driveSystem); //Autos.driveToStage(driveSystem);
+
+    switch(SmartDashboard.getString("Auto Selector", m_chooser.getSelected())) {
+      case "Default": {return Autos.twoPieceCenter(mechSystem, driveSystem);}
+      case "TwoPieceCenter": {return Autos.twoPieceCenter(mechSystem, driveSystem);}
+      case "Leave": {return Autos.twoPieceCenter(mechSystem, driveSystem);}
+      default: {return Autos.twoPieceCenter(mechSystem, driveSystem);}
+    }
+
   }
 }
