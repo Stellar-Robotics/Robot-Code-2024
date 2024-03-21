@@ -51,6 +51,9 @@ public class RobotContainer {
   private double angleOffset = 0;
   final int autoSelect = 0;
 
+  // Define sendable chooser
+  SendableChooser<Command> autoSelector = new SendableChooser<Command>();
+
   // The driver's controller
   StellarController driverController = new StellarController(OIConstants.kDriverControllerPort);
   XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
@@ -65,12 +68,36 @@ public class RobotContainer {
    */
   public RobotContainer() {
 
-    SmartDashboard.putBoolean("anDrew-Piece-Auto", false);
+    /*SmartDashboard.putBoolean("anDrew-Piece-Auto", false);
     SmartDashboard.putBoolean("Two-Piece-Auto", false);
-    SmartDashboard.putBoolean("Leave Only", false);
+    SmartDashboard.putBoolean("Leave Only", false);*/
+
+    autoSelector.addOption("Leave", Autos.leave(driveSystem));
+    autoSelector.addOption("Drew-Piece-Center", Autos.drewPiece(mechSystem, driveSystem));
+    autoSelector.addOption("Drew-Piece-Left", Autos.drewPieceLeft(mechSystem, driveSystem));
+    autoSelector.addOption("Sitting Duck", Commands.runOnce(() -> {driveSystem.drive(0, 0, 0, false, false);}, driveSystem));
+
+    SmartDashboard.putData(autoSelector);
 
     System.out.println("Hello World");
 
+
+    floodLights.setDefaultCommand(new RunCommand(() -> {
+
+      if (mechSystem.getIntakePos() < 0.30) {
+        if (mechSystem.getShooterSpeed() > 100) {
+
+          if (mechSystem.getShooterSpeed() < 3600) {
+            floodLights.storedPreset("solid-red");
+          } else {
+            floodLights.storedPreset("solid-green");
+          }
+        } else {
+          floodLights.setPrimary();
+        }
+      }
+
+    }, floodLights));
 
 
     mechSystem.setDefaultCommand(new RunCommand(() -> {
@@ -296,6 +323,9 @@ public class RobotContainer {
               !mechSystem.intake.firstSpike))
         {
           mechSystem.setIntakePower(0);
+          if (operatorController.getRightBumper()) {
+            floodLights.storedPreset("solid-pink");
+          }
         }
 
 
@@ -445,9 +475,11 @@ public class RobotContainer {
       case "Leave": {return Autos.leave(driveSystem);}
     }*/
 
-    if (SmartDashboard.getBoolean("Leave Only", false)) {System.out.println("Leave Activated"); return Autos.leave(driveSystem);}
+    /*if (SmartDashboard.getBoolean("Leave Only", false)) {System.out.println("Leave Activated"); return Autos.leave(driveSystem);}
     else if (SmartDashboard.getBoolean("anDrew-Piece-Auto", false)) {System.out.println("Drew-Piece Activated"); return Autos.drewPiece(mechSystem, driveSystem);}
     else if (SmartDashboard.getBoolean("Two-Piece-Auto", false)) {System.out.println("Two-Piece Activated"); return Autos.twoPieceCenter(mechSystem, driveSystem);}
-    else {System.out.println("Default Activated"); return Autos.drewPiece(mechSystem, driveSystem);}
+    else {System.out.println("Default Activated"); return Autos.drewPieceLeft(mechSystem, driveSystem);}*/
+
+    return autoSelector.getSelected();
   }
 }

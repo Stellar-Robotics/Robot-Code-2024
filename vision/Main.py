@@ -17,13 +17,17 @@ def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPo
     #absRobotU = absoluteTagPose.Z() - tagPose.Z()
 
 def main():
-
+   failAllowance = 0
    while True:
-      pingCommand = os.system("ping -c 1 10.54.13.2")
+      pingCommand = os.system("ping -c 1 roboRIO-5413-FRC.local")
       if pingCommand == 0:
          print("Ping Succeded: Starting Vision Program")
+         time.sleep(10)
+         break
+      if failAllowance > 15:
          break
       print("Ping Failed, Trying again...")
+      failAllowance += 1
       time.sleep(0.5)
 
 
