@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.MechanismSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.utils.MiscUtils;
@@ -46,23 +47,13 @@ public class RobotContainer {
   private final VisionSubsystem visionSystem = new VisionSubsystem();
   private final DriveSubsystem driveSystem = new DriveSubsystem(new Pose2d(0, 0, new Rotation2d(0)), visionSystem);
   private final MechanismSubsystem mechSystem = new MechanismSubsystem(visionSystem);
+  private final Lights floodLights = new Lights();
   private double angleOffset = 0;
+  final int autoSelect = 0;
 
   // The driver's controller
   StellarController driverController = new StellarController(OIConstants.kDriverControllerPort);
   XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
-
-  public void lightController() {
-    final Spark lightController = new Spark(9);
-    lightController.set(-0.57);
-  }
-
-    // Auto selector
-  final String kDefaultAuto = "Default";
-  final String kTwoPieceAuto = "TwoPieceCenter";
-  final String kLeaveAuto = "Leave";
-
-  final SendableChooser<String> m_chooser = new SendableChooser<>();
 
 
   
@@ -74,16 +65,16 @@ public class RobotContainer {
    */
   public RobotContainer() {
 
-    // Auto Switcher
-    m_chooser.setDefaultOption("anDrew-Piece", kDefaultAuto);
-    m_chooser.addOption("Two-Piece Center", kTwoPieceAuto);
-    m_chooser.addOption("Leave Only", kLeaveAuto);
+    SmartDashboard.putBoolean("anDrew-Piece-Auto", false);
+    SmartDashboard.putBoolean("Two-Piece-Auto", false);
+    SmartDashboard.putBoolean("Leave Only", false);
 
-    SmartDashboard.putData("Auto Selector", m_chooser);
+    System.out.println("Hello World");
 
 
 
     mechSystem.setDefaultCommand(new RunCommand(() -> {
+
       // Create a quick refrence to the operator POV HAT.
       int operatorPOV = operatorController.getPOV(0);
 
@@ -448,12 +439,15 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
 
-    switch(SmartDashboard.getString("Auto Selector", m_chooser.getSelected())) {
-      case "Default": {return Autos.twoPieceCenter(mechSystem, driveSystem);}
+    /*switch(SmartDashboard.getString("Auto Selector", m_chooser.getSelected())) {
+      case "Default": {return Autos.drewPiece(mechSystem, driveSystem);}
       case "TwoPieceCenter": {return Autos.twoPieceCenter(mechSystem, driveSystem);}
-      case "Leave": {return Autos.twoPieceCenter(mechSystem, driveSystem);}
-      default: {return Autos.twoPieceCenter(mechSystem, driveSystem);}
-    }
+      case "Leave": {return Autos.leave(driveSystem);}
+    }*/
 
+    if (SmartDashboard.getBoolean("Leave Only", false)) {System.out.println("Leave Activated"); return Autos.leave(driveSystem);}
+    else if (SmartDashboard.getBoolean("anDrew-Piece-Auto", false)) {System.out.println("Drew-Piece Activated"); return Autos.drewPiece(mechSystem, driveSystem);}
+    else if (SmartDashboard.getBoolean("Two-Piece-Auto", false)) {System.out.println("Two-Piece Activated"); return Autos.twoPieceCenter(mechSystem, driveSystem);}
+    else {System.out.println("Default Activated"); return Autos.drewPiece(mechSystem, driveSystem);}
   }
 }

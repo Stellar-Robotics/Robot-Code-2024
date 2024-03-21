@@ -157,8 +157,6 @@ public final class Autos {
   }
 
   public static Command leave(DriveSubsystem drive) {
-    //return driveToLocationCommand(getPose(2.5, 0, 0), drive);
-
     
     return resetOdometry(drive)
       .andThen(driveToLocationCommand(getPose(0, 0, 0), getPose(1.5, 0, 0), false, drive))
@@ -332,7 +330,74 @@ public final class Autos {
       turnLeftAndCheck(mechSystem, drive), tagIsVisible));
   }
 
+
+  // DREW PIECE CENTER
   public static Command drewPiece(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    BooleanSupplier tagIsVisible = () -> {
+      //return mechSystem.vision.getRobotPose() != null;
+      return mechSystem.vision.getAprilTagX(0) != 300;
+      //return true;
+    };
+
+    return 
+      setShooterProfile(0, 4000, mechSystem)
+      .andThen(driveToLocationCommand(getPose(0, 0, 0), 
+        getPose(0.6, 0, 0), false, drive))
+      .andThen(getStopCommand(drive))
+      //.andThen(Commands.waitSeconds(1))
+      .andThen(Commands.runOnce(() -> drive.drive(0, 0, 0.05, false, false)).repeatedly().until(tagIsVisible))
+      .andThen(aimAndShootWithVision(mechSystem, drive))
+      .andThen(Commands.runOnce(() -> drive.drive(0, 0, 0, false, false)).repeatedly().withTimeout(2))
+      .andThen(getStopCommand(drive))
+      //.andThen(grabAndGoCurrentThreshold(mechSystem, drive))
+      .andThen(intakeAngle(0.35, mechSystem))
+      .andThen(intakePower(1, mechSystem))
+      .andThen(
+        new ParallelCommandGroup(
+          driveToLocationCommand(getPose(0.6, 0, 0), getPose(1, 0, 0), false, drive),
+          Commands.waitSeconds(0.5).andThen(intakeWithCurrentThreshold(mechSystem))
+        )
+      )
+      .andThen(getStopCommand(drive))
+      .andThen(aimAndShootWithVision(mechSystem, drive))
+      .andThen(setShooterProfile(0, 0, mechSystem));
+  }
+
+
+  // DREW PIECE LEFT
+  public static Command drewPieceLeft(MechanismSubsystem mechSystem, DriveSubsystem drive) {
+    BooleanSupplier tagIsVisible = () -> {
+      //return mechSystem.vision.getRobotPose() != null;
+      return mechSystem.vision.getAprilTagX(0) != 300;
+      //return true;
+    };
+
+    return 
+      setShooterProfile(0, 4000, mechSystem)
+      .andThen(driveToLocationCommand(getPose(0, 0, 0), 
+        getPose(0.6, 0, 0), false, drive))
+      .andThen(getStopCommand(drive))
+      //.andThen(Commands.waitSeconds(1))
+      .andThen(Commands.runOnce(() -> drive.drive(0, 0, 0.05, false, false)).repeatedly().until(tagIsVisible))
+      .andThen(aimAndShootWithVision(mechSystem, drive))
+      .andThen(Commands.runOnce(() -> drive.drive(0, 0, 0, false, false)).repeatedly().withTimeout(2))
+      .andThen(getStopCommand(drive))
+      //.andThen(grabAndGoCurrentThreshold(mechSystem, drive))
+      .andThen(intakeAngle(0.35, mechSystem))
+      .andThen(intakePower(1, mechSystem))
+      .andThen(
+        new ParallelCommandGroup(
+          driveToLocationCommand(getPose(0.6, 0, 0), getPose(1, 0, 0), false, drive),
+          Commands.waitSeconds(0.5).andThen(intakeWithCurrentThreshold(mechSystem))
+        )
+      )
+      .andThen(getStopCommand(drive))
+      .andThen(aimAndShootWithVision(mechSystem, drive))
+      .andThen(setShooterProfile(0, 0, mechSystem));
+  }
+
+  // DREW PIECE RIGHT
+  public static Command drewPieceRight(MechanismSubsystem mechSystem, DriveSubsystem drive) {
     BooleanSupplier tagIsVisible = () -> {
       //return mechSystem.vision.getRobotPose() != null;
       return mechSystem.vision.getAprilTagX(0) != 300;

@@ -201,4 +201,8 @@ public final class Constants {
 
 
   }
+
+  public static class MiscConstants {
+    public static final int lightControllerPort = 9;
+  }
 }
