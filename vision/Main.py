@@ -4,9 +4,6 @@ import robotpy_apriltag as apriltag
 import ntcore
 from wpimath.geometry import *
 from wpimath.filter import LinearFilter
-import time
-
-time.sleep(10)
 
 def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose : Transform3d, tagId : int):
     # closest thing to assumed odometry coordinate system is EDN, so we'll convert the absolute pose to that
@@ -37,7 +34,8 @@ def main():
 
    absolutePoseTopic = smartDashboard.getDoubleArrayTopic("robotPose").publish()
 
-   tagsToFollow = [4, 5, 7, 11, 12, 13, 14, 15, 16]
+   tagsToFollow = [4, 5, 7, #11, 12, 13, 14, 15, 16
+                   ]
 
    frameZFilter = LinearFilter.singlePoleIIR(0.5, 0.2)
    
