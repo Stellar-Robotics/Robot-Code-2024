@@ -4,6 +4,8 @@ import robotpy_apriltag as apriltag
 import ntcore
 from wpimath.geometry import *
 from wpimath.filter import LinearFilter
+import os
+import time
 
 def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPose : Transform3d, tagId : int):
     # closest thing to assumed odometry coordinate system is EDN, so we'll convert the absolute pose to that
@@ -15,6 +17,16 @@ def calculateAbsoluteRobotPose(fieldLayout : apriltag.AprilTagFieldLayout, tagPo
     #absRobotU = absoluteTagPose.Z() - tagPose.Z()
 
 def main():
+
+   while True:
+      pingCommand = os.system("ping -c 1 10.54.13.2")
+      if pingCommand == 0:
+         print("Ping Succeded: Starting Vision Program")
+         break
+      print("Ping Failed, Trying again...")
+      time.sleep(0.5)
+
+
    tagSize = 0.17 # meters
    focalCenterX = 325.00253538
    focalCenterY = 235.65891798
