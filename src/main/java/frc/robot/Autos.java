@@ -413,17 +413,17 @@ public final class Autos {
         getPose(0.6, 0.8, 0), false, drive))
       .andThen(getStopCommand(drive))
       //.andThen(Commands.waitSeconds(1))
-      //.andThen(Commands.runOnce(() -> drive.drive(0, 0, 0.05, false, false)).repeatedly().until(tagIsVisible))
+      .andThen(Commands.runOnce(() -> drive.drive(0, 0, -0.05, false, false)).repeatedly().until(tagIsVisible))
       .andThen(aimAndShootWithVision(mechSystem, drive))
       .andThen(Commands.runOnce(() -> drive.drive(0, 0, 0, false, false)).repeatedly().withTimeout(2))
       .andThen(getStopCommand(drive))
       //.andThen(grabAndGoCurrentThreshold(mechSystem, drive))
       .andThen(intakeAngle(0.35, mechSystem))
       .andThen(intakePower(1, mechSystem))
-      .andThen(driveToLocationCommand(getPose(0.6, 0.8, 0), getPose(0.5, 0.7, 15), false, drive))
+      .andThen(driveToLocationCommand(getPose(0.6, 0.8, 0), getPose(0.5, 0.7, 345), false, drive))
       .andThen(
         new ParallelCommandGroup(
-          driveToLocationCommand(getPose(0.5, 0.7, 15), getPose(1, 0, 15), false, drive),
+          driveToLocationCommand(getPose(0.5, 0.7, 345), getPose(1, 0, 345), false, drive),
           Commands.waitSeconds(0.5).andThen(intakeWithCurrentThreshold(mechSystem))
         )
       )
