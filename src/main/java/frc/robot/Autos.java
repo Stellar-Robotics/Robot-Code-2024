@@ -160,7 +160,8 @@ public final class Autos {
     
     return resetOdometry(drive)
       .andThen(driveToLocationCommand(getPose(0, 0, 0), getPose(1.5, 0, 0), false, drive))
-      .andThen(getStopCommand(drive));
+      .andThen(Commands.runOnce(() -> {drive.drive(0, 0, 0, false, false);}, drive));
+      //.andThen(getStopCommand(drive));
   }
 
   public static Command resetOdometry(DriveSubsystem drive) {
